@@ -65,9 +65,11 @@
         <input type="text" name="images">
       </form>
 
-      <!-- Updated with absolute path in data-netlify-success-url -->
-      <form id="addCarForm" class="space-y-6" data-netlify="true" name="car-submissions" method="POST" action="/admin/success.html">
-  <input type="hidden" name="form-name" value="car-submissions" />
+      <!-- Form with direct form action to car-list.html -->
+      <form id="addCarForm" class="space-y-6" data-netlify="true" name="car-submissions" method="POST">
+        <input type="hidden" name="form-name" value="car-submissions" />
+        <input type="hidden" name="success_url" value="/admin/car-list.html" />
+        
         <!-- Basic Info -->
         <h2 class="text-xl font-bold border-b pb-2">Basic Information</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -241,14 +243,29 @@
       myWidget.open();
     }, false);
 
-    // Form submission handling
+    // Enhanced form submission handling
     document.getElementById('addCarForm').addEventListener('submit', function(e) {
+      console.log("Form submission started");
+      
       if (uploadedImages.length === 0) {
         e.preventDefault();
+        console.log("Submission blocked: No images uploaded");
         alert('Please upload at least one image');
         return false;
       }
+      
+      console.log("Form submission proceeding with images:", uploadedImages);
+      localStorage.setItem('formSubmitted', 'true');
+      // The form will submit normally if images are present
     });
+    
+    // Check if we just came back from a form submission
+    if (localStorage.getItem('formSubmitted') === 'true') {
+      // Clear the flag
+      localStorage.removeItem('formSubmitted');
+      // Redirect to car list
+      window.location.href = './car-list.html';
+    }
   </script>
 </body>
 </html>

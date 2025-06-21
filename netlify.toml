@@ -1,14 +1,21 @@
 [build]
   publish = "."
 
+# Add a specific redirect for the success page
 [[redirects]]
-  from = "/admin/add-car"
+  from = "/admin/success.html"
   to = "/admin/car-list.html"
   status = 302
   force = true
-  conditions = {Success = true}
 
-# Fallback to handle any errors
+# Add a specific redirect for form submissions
+[[redirects]]
+  from = "/admin/car-submissions"
+  to = "/admin/car-list.html"
+  status = 302
+  force = true
+
+# Fallback redirect should be last
 [[redirects]]
   from = "/*"
   to = "/index.html"
