@@ -65,8 +65,8 @@
         <input type="text" name="images">
       </form>
 
-      <!-- CORRECTED FORM TAG - removed erroneous closing tag -->
-      <form id="addCarForm" class="space-y-6" data-netlify="true" name="car-submissions" method="POST" action="./success.html">
+      <!-- Using data-netlify-success-url instead of action attribute -->
+      <form id="addCarForm" class="space-y-6" data-netlify="true" name="car-submissions" method="POST" data-netlify-success-url="/admin/car-list.html">
         <input type="hidden" name="form-name" value="car-submissions" />
         
         <!-- Basic Info -->
