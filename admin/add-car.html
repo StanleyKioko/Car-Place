@@ -21,9 +21,49 @@
       gap: 10px;
       margin-top: 10px;
     }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+    .overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #ffffff;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="bg-gray-100">
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="overlay">
+    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+      <div class="spinner mx-auto mb-4"></div>
+      <p class="text-lg font-medium">Submitting car data...</p>
+      <p class="text-sm text-gray-500 mt-2">Please wait, you will be redirected when complete.</p>
+    </div>
+  </div>
+
   <!-- Header -->
   <header class="bg-white shadow sticky top-0 z-50">
     <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -65,10 +105,9 @@
         <input type="text" name="images">
       </form>
 
-      <!-- Form with direct form action to car-list.html -->
+      <!-- Form that we'll handle manually with JavaScript -->
       <form id="addCarForm" class="space-y-6" data-netlify="true" name="car-submissions" method="POST">
         <input type="hidden" name="form-name" value="car-submissions" />
-        <input type="hidden" name="success_url" value="/admin/car-list.html" />
         
         <!-- Basic Info -->
         <h2 class="text-xl font-bold border-b pb-2">Basic Information</h2>
@@ -164,6 +203,28 @@
   </section>
 
   <script>
+    // Success notification function
+    function showSuccessMessage(message, timeout = 3000) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-4 rounded shadow-lg z-50 animate-bounce';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, timeout);
+    }
+    
+    // Show/hide loading overlay
+    function toggleLoading(show) {
+      const overlay = document.getElementById('loadingOverlay');
+      if (show) {
+        overlay.classList.add('active');
+      } else {
+        overlay.classList.remove('active');
+      }
+    }
+    
     // Cloudinary upload widget configuration
     const cloudName = 'dx0jb4xsv'; // Your Cloudinary cloud name
     const uploadPreset = 'car_images'; // Your upload preset name
@@ -243,29 +304,57 @@
       myWidget.open();
     }, false);
 
-    // Enhanced form submission handling
+    // Handle form submission with fetch and manual redirect
     document.getElementById('addCarForm').addEventListener('submit', function(e) {
+      e.preventDefault();
       console.log("Form submission started");
       
       if (uploadedImages.length === 0) {
-        e.preventDefault();
-        console.log("Submission blocked: No images uploaded");
         alert('Please upload at least one image');
         return false;
       }
       
-      console.log("Form submission proceeding with images:", uploadedImages);
-      localStorage.setItem('formSubmitted', 'true');
-      // The form will submit normally if images are present
+      // Show loading overlay
+      toggleLoading(true);
+      
+      const form = this;
+      const formData = new FormData(form);
+      
+      // Submit the form using fetch instead of standard form submission
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formData).toString()
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log("Form submitted successfully");
+          // Clear form
+          form.reset();
+          uploadedImages = [];
+          imagesInput.value = '';
+          imagePreview.innerHTML = '';
+          
+          // Hide loading
+          toggleLoading(false);
+          
+          // Show success message
+          showSuccessMessage("Car added successfully!");
+          
+          // Redirect to dashboard after a brief delay
+          setTimeout(() => {
+            window.location.href = './index.html';
+          }, 1000);
+        } else {
+          throw new Error('Form submission failed');
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        toggleLoading(false);
+        alert('There was an error submitting the form. Please try again.');
+      });
     });
-    
-    // Check if we just came back from a form submission
-    if (localStorage.getItem('formSubmitted') === 'true') {
-      // Clear the flag
-      localStorage.removeItem('formSubmitted');
-      // Redirect to car list
-      window.location.href = './car-list.html';
-    }
   </script>
 </body>
 </html>
