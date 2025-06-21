@@ -66,9 +66,8 @@
       </form>
 
       <!-- Updated with absolute path in data-netlify-success-url -->
-      <form id="addCarForm" class="space-y-6" data-netlify="true" name="car-submissions" method="POST" data-netlify-success-url="/admin/car-list.html">
-        <input type="hidden" name="form-name" value="car-submissions" />
-        
+      <form id="addCarForm" class="space-y-6" data-netlify="true" name="car-submissions" method="POST" action="/admin/success.html">
+  <input type="hidden" name="form-name" value="car-submissions" />
         <!-- Basic Info -->
         <h2 class="text-xl font-bold border-b pb-2">Basic Information</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
