@@ -1,0 +1,14 @@
+[build]
+  publish = "."
+
+[forms]
+  [forms.car-submissions]
+    name = "car-submissions"
+    fields = { make = "Make", model = "Model", year = "Year", price = "Price", mileage = "Mileage", engine = "Engine", transmission = "Transmission", fuel = "Fuel Type", features = "Features", description = "Description", isFeatured = "Featured", specialTags = "Special Tags", images = "Images" }
+
+# Larger form size limit to handle image URLs
+[functions]
+  node_bundler = "esbuild"
+
+[[plugins]]
+  package = "@netlify/plugin-emails"

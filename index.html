@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blobe Stano Cars - Buy Your Dream Car</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+    .car-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .car-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .hero-bg {
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <!-- Header -->
+  <header class="bg-white shadow sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="text-2xl font-bold text-blue-600 font-poppins">
+        Blobe Stano Cars
+      </div>
+      <div class="space-x-6">
+        <a href="index.html" class="text-gray-700 hover:text-blue-600">Home</a>
+        <a href="cars.html" class="text-gray-700 hover:text-blue-600">Cars</a>
+        <a href="contact.html" class="text-gray-700 hover:text-blue-600">Contact</a>
+        <a href="about.html" class="text-gray-700 hover:text-blue-600">About</a>
+        <a href="admin/index.html" class="text-gray-700 hover:text-blue-600">Admin</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-bg h-96 flex items-center justify-center text-white">
+    <div class="text-center">
+      <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4">Find Your Dream Car in Kenya</h1>
+      <p class="text-lg md:text-xl mb-6">Explore our wide range of quality vehicles at unbeatable prices.</p>
+      <a href="cars.html" class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition">Browse Cars</a>
+    </div>
+  </section>
+
+  <!-- Featured Cars Preview -->
+  <!-- Featured Cars Preview -->
+  <section class="container mx-auto px-4 py-12">
+    <h2 class="text-3xl font-bold text-center font-poppins mb-8">Featured Cars</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Featured Car 1 -->
+      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1541348263662-e068662d82af?q=80&w=1000&auto=format&fit=crop" alt="Toyota Corolla" class="w-full h-48 object-cover">
+        <div class="p-6">
+          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Corolla</h3>
+          <p class="text-gray-600 mb-4">Reliable and fuel-efficient sedan.</p>
+          <p class="text-2xl font-bold text-blue-600">KSh 1,850,000</p>
+          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+        </div>
+      </div>
+
+      <!-- Featured Car 2 - Mercedes E220d AMG -->
+      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden border-2 border-yellow-200">
+        <div class="bg-yellow-100 px-4 py-2">
+          <span class="text-yellow-800 font-bold text-xs">PREMIUM • FULLY LOADED</span>
+        </div>
+        <img src="https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1000&auto=format&fit=crop" alt="Mercedes E220d" class="w-full h-48 object-cover">
+        <div class="p-6">
+          <h3 class="text-xl font-bold font-poppins mb-2">Mercedes E220d AMG</h3>
+          <p class="text-gray-600 mb-4">Pearl White • 360° Camera • Burmester Audio</p>
+          <p class="text-2xl font-bold text-red-600">KSh 4,350,000</p>
+          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+        </div>
+      </div>
+
+      <!-- Featured Car 3 - Nissan X-Trail -->
+      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
+        <img src="Nissan X-Trail.jpg" alt="Nissan X-Trail" class="w-full h-48 object-cover">
+        <div class="p-6">
+          <h3 class="text-xl font-bold font-poppins mb-2">Nissan X-Trail</h3>
+          <p class="text-gray-600 mb-4">7 seater • Black leather • Push to start</p>
+          <p class="text-2xl font-bold text-blue-600">KSh 2,050,000</p>
+          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+        </div>
+      </div>
+
+      <!-- Featured Car 4 - Suzuki Jimny -->
+      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden border-2 border-green-200">
+        <div class="bg-green-100 px-4 py-2">
+          <span class="text-green-800 font-bold text-xs">2022 MODEL • LOW MILEAGE</span>
+        </div>
+        <img src="https://images.unsplash.com/photo-1614200187524-dc4b892acf16?q=80&w=1000&auto=format&fit=crop" alt="Suzuki Jimny" class="w-full h-48 object-cover">
+        <div class="p-6">
+          <h3 class="text-xl font-bold font-poppins mb-2">Suzuki Jimny</h3>
+          <p class="text-gray-600 mb-4">Green • 4WD • Only 9,070 km • Heated seats</p>
+          <p class="text-2xl font-bold text-blue-600">KSh 2,380,000</p>
+          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+        </div>
+      </div>
+
+      <!-- Featured Car 5 - Toyota Prado -->
+      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000&auto=format&fit=crop" alt="Toyota Prado" class="w-full h-48 object-cover">
+        <div class="p-6">
+          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Prado J150</h3>
+          <p class="text-gray-600 mb-4">Black • 7 seater • 2WD/4WD • 2700cc</p>
+          <p class="text-2xl font-bold text-blue-600">KSh 3,150,000</p>
+          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+        </div>
+      </div>
+
+      <!-- Featured Car 6 - Toyota Mark II (Budget Option) -->
+      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden border-2 border-blue-200">
+        <div class="bg-blue-100 px-4 py-2">
+          <span class="text-blue-800 font-bold text-xs">BUDGET FRIENDLY • WELL MAINTAINED</span>
+        </div>
+        <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000&auto=format&fit=crop" alt="Toyota Mark II" class="w-full h-48 object-cover">
+        <div class="p-6">
+          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Mark II</h3>
+          <p class="text-gray-600 mb-4">Gray leather • Heavy music system • Wooden finish</p>
+          <p class="text-2xl font-bold text-green-600">KSh 495,000</p>
+          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-6">
+    <div class="container mx-auto px-4 text-center">
+      <p>&copy; 2025 Blobe Stano Cars. All rights reserved.</p>
+      <p class="mt-2">Contact us: <a href="mailto:info@blobestanocars.com" class="underline">info@blobestanocars.com</a> | +254 708967800</p>
+    </div>
+  </footer>
+</body>
+</html>
