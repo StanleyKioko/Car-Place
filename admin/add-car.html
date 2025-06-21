@@ -90,8 +90,13 @@
   <section class="container mx-auto px-4 py-8">
     <div class="bg-white p-6 rounded-lg shadow-lg">
       <!-- Form with direct Netlify form handling -->
-      <form name="car-submissions" method="POST" data-netlify="true" id="addCarForm" class="space-y-6">
+      <form name="car-submissions" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="addCarForm" class="space-y-6">
         <input type="hidden" name="form-name" value="car-submissions">
+        
+        <!-- Honeypot field to prevent spam -->
+        <div style="display: none;">
+          <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+        </div>
         
         <!-- Basic Info -->
         <h2 class="text-xl font-bold border-b pb-2">Basic Information</h2>
@@ -199,6 +204,18 @@
       }, timeout);
     }
     
+    // Error notification function
+    function showErrorMessage(message, timeout = 5000) {
+      const notification = document.createElement('div');
+      notification.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-4 rounded shadow-lg z-50';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, timeout);
+    }
+    
     // Show/hide loading overlay
     function toggleLoading(show) {
       const overlay = document.getElementById('loadingOverlay');
@@ -288,6 +305,12 @@
       myWidget.open();
     }, false);
 
+    // Check if we're running locally
+    const isLocalEnvironment = 
+      window.location.hostname === 'localhost' || 
+      window.location.hostname === '127.0.0.1' ||
+      window.location.protocol === 'file:';
+
     // Handle form submission
     document.getElementById('addCarForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -304,42 +327,76 @@
       // Get the form element
       const form = this;
       
-      // Create a fetch request to submit the form to Netlify
-      fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(new FormData(form)).toString()
-      })
-      .then(response => {
-        console.log("Response status:", response.status);
-        if (response.ok) {
-          // Form submitted successfully
-          console.log("Form submitted successfully");
-          
-          // Clear form
+      // Log form data for debugging
+      const formData = new FormData(form);
+      console.log("Submitting form with data:", Object.fromEntries(formData));
+      
+      // Special handling for local development
+      if (isLocalEnvironment) {
+        console.log("Local environment detected. Simulating successful submission.");
+        setTimeout(() => {
+          toggleLoading(false);
+          showSuccessMessage("Car added successfully! (Local mode)");
           form.reset();
           uploadedImages = [];
           imagesInput.value = '';
           imagePreview.innerHTML = '';
           
-          // Hide loading
-          toggleLoading(false);
-          
-          // Show success message
-          showSuccessMessage("Car added successfully!");
-          
-          // Redirect to car list page after a brief delay
           setTimeout(() => {
             window.location.href = './car-list.html';
           }, 1500);
-        } else {
-          throw new Error('Form submission failed');
-        }
+        }, 1000);
+        return;
+      }
+      
+      // Create a fetch request to submit the form to Netlify
+      fetch("/", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Accept": "application/json"
+        },
+        body: new URLSearchParams(formData).toString()
+      })
+      .then(response => {
+        console.log("Response status:", response.status);
+        console.log("Response headers:", [...response.headers.entries()]);
+        
+        // Print response body for debugging
+        return response.text().then(text => {
+          console.log("Response body:", text);
+          
+          if(response.ok) {
+            // Form submitted successfully
+            console.log("Form submitted successfully");
+            
+            // Clear form
+            form.reset();
+            uploadedImages = [];
+            imagesInput.value = '';
+            imagePreview.innerHTML = '';
+            
+            // Hide loading
+            toggleLoading(false);
+            
+            // Show success message
+            showSuccessMessage("Car added successfully!");
+            
+            // Redirect to car list page after a brief delay
+            setTimeout(() => {
+              window.location.href = './car-list.html';
+            }, 1500);
+          } else {
+            throw new Error(`Server returned ${response.status}: ${text}`);
+          }
+        });
       })
       .catch(error => {
-        console.error("Error:", error);
+        console.error("Error details:", error);
         toggleLoading(false);
-        alert('There was an error submitting the form. Please try again.');
+        
+        // Show detailed error in console and a user-friendly message on screen
+        showErrorMessage(`Form submission failed: ${error.message}. Check console for details.`);
       });
     });
   </script>
