@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Keep your existing head content -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Car - Admin Panel</title>
@@ -9,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
   <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
   <style>
-    /* Keep your existing styles */
     body {
       font-family: 'Roboto', sans-serif;
     }
@@ -91,35 +89,36 @@
   <!-- Add Car Form -->
   <section class="container mx-auto px-4 py-8">
     <div class="bg-white p-6 rounded-lg shadow-lg">
-      <!-- Hidden form for Netlify to discover form fields at build time -->
+      <!-- Static form for Netlify to index at build time - Critical fix -->
       <form name="car-submissions" netlify netlify-honeypot="bot-field" hidden>
-        <input type="text" name="make" />
-        <input type="text" name="model" />
-        <input type="number" name="year" />
-        <input type="text" name="engine" />
-        <input type="text" name="drive" />
-        <input type="text" name="colour" />
-        <input type="number" name="mileage" />
-        <input type="text" name="registration" />
-        <input type="number" name="price" />
+        <input type="text" name="make">
+        <input type="text" name="model">
+        <input type="number" name="year">
+        <input type="text" name="engine">
+        <input type="text" name="drive">
+        <input type="text" name="colour">
+        <input type="number" name="mileage">
+        <input type="text" name="registration">
+        <input type="number" name="price">
         <textarea name="features"></textarea>
-        <input type="text" name="transmission" />
-        <input type="text" name="fuel" />
-        <input type="text" name="images" />
-        <input type="checkbox" name="isFeatured" />
-        <input name="bot-field" />
+        <input type="text" name="transmission">
+        <input type="text" name="fuel">
+        <input type="text" name="images">
+        <input type="checkbox" name="isFeatured">
+        <input name="bot-field">
+        <input type="hidden" name="form-name" value="car-submissions">
       </form>
 
-      <!-- IMPORTANT CHANGE: Remove the action attribute to use native browser form submission -->
-      <form name="car-submissions" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="addCarForm" class="space-y-6">
+      <!-- Live form -->
+      <form name="car-submissions" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" id="addCarForm" class="space-y-6">
+        <!-- Critical fix: form-name must match exactly -->
         <input type="hidden" name="form-name" value="car-submissions">
         
         <!-- Honeypot field to prevent spam -->
         <div style="display: none;">
-          <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+          <label>Don't fill this out if you're human: <input name="bot-field"></label>
         </div>
         
-        <!-- Keep your existing form fields -->
         <!-- Basic Info -->
         <h2 class="text-xl font-bold border-b pb-2">Basic Information</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -174,7 +173,6 @@
           </div>
         </div>
         
-        <!-- Explicitly add fields that are expected by submission-created.js but missing -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="transmission">Transmission</label>
@@ -211,7 +209,7 @@
             <button id="upload_widget" type="button" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
               <div class="flex flex-col items-center justify-center pt-5 pb-6">
                 <svg class="w-8 h-8 mb-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                 </svg>
                 <p class="mb-2 text-sm text-gray-500">Click to upload or drag and drop</p>
                 <p class="text-xs text-gray-500">JPG, PNG, WEBP (MAX. 5MB each)</p>
@@ -237,7 +235,6 @@
   </section>
 
   <script>
-    // Keep your existing utility functions
     function showSuccessMessage(message, timeout = 3000) {
       const notification = document.createElement('div');
       notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-4 rounded shadow-lg z-50 animate-bounce';
@@ -269,7 +266,6 @@
       }
     }
     
-    // Keep your Cloudinary upload widget configuration
     const cloudName = 'dx0jb4xsv';
     const uploadPreset = 'car_images';
     
@@ -277,7 +273,6 @@
     const imagePreview = document.getElementById('imagePreview');
     const imagesInput = document.getElementById('images');
     
-    // Initialize Cloudinary upload widget (keep your existing code)
     const myWidget = cloudinary.createUploadWidget({
       cloudName: cloudName,
       uploadPreset: uploadPreset,
@@ -306,13 +301,9 @@
       }
     }, (error, result) => {
       if (!error && result && result.event === "success") {
-        // Add the uploaded image to our array
         uploadedImages.push(result.info.secure_url);
-        
-        // Update the hidden input field with the image URLs
         imagesInput.value = uploadedImages.join(',');
         
-        // Create and display image preview
         const previewContainer = document.createElement('div');
         previewContainer.className = 'relative';
         
@@ -324,7 +315,6 @@
         removeBtn.innerHTML = '×';
         removeBtn.className = 'absolute top-0 right-0 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center';
         removeBtn.onclick = function() {
-          // Remove image from array
           const index = uploadedImages.indexOf(result.info.secure_url);
           if (index > -1) {
             uploadedImages.splice(index, 1);
@@ -348,18 +338,17 @@
       myWidget.open();
     }, false);
 
-    // Check if we're running locally
     const isLocalEnvironment = 
       window.location.hostname === 'localhost' || 
       window.location.hostname === '127.0.0.1' ||
       window.location.protocol === 'file:';
 
-    // MAJOR CHANGE: The form submission handler is completely rewritten
+    // COMPLETELY REVISED FORM SUBMISSION
     document.getElementById('addCarForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      console.log("Form submission started");
-      
+      // Don't use preventDefault() for production environment - this is key
+      // Only prevent default for local environment testing or when image validation fails
       if (uploadedImages.length === 0) {
+        e.preventDefault();
         alert('Please upload at least one image');
         return false;
       }
@@ -367,19 +356,14 @@
       // Show loading overlay
       toggleLoading(true);
       
-      const form = this;
-      const formData = new FormData(form);
-      
-      // Log for debugging
-      console.log("Form data:", Object.fromEntries(formData));
-      
       // Handle local environment differently
       if (isLocalEnvironment) {
+        e.preventDefault(); // Only prevent form submission in local mode
         console.log("Local environment detected - simulating form submission");
         setTimeout(() => {
           toggleLoading(false);
           showSuccessMessage("Car added successfully (local mode)");
-          form.reset();
+          this.reset();
           uploadedImages = [];
           imagesInput.value = '';
           imagePreview.innerHTML = '';
@@ -391,21 +375,12 @@
         return;
       }
 
-      // IMPORTANT: Use the native form submission instead of fetch API
-      // This is the critical change to fix Netlify form issues
-      // We'll manually submit the form but still show our custom UI
+      // For production: Let the native form submission happen
+      // No preventDefault() = native form submission to Netlify
+      // The form will automatically redirect to the success page
       
-      // First, let's store our original form action
-      const originalAction = form.getAttribute('action');
-      
-      // Set a redirect URL if there isn't one
-      if (!originalAction) {
-        form.setAttribute('action', '/admin/success.html');
-      }
-      
-      // Submit the form using native browser submission
-      // This is much more reliable with Netlify forms
-      form.submit();
+      // Optionally, you can log for debugging
+      console.log("Form submitted with data:", new FormData(this));
     });
   </script>
 </body>
