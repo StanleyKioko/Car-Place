@@ -10,6 +10,18 @@
     body {
       font-family: 'Roboto', sans-serif;
     }
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #3b82f6;
+      animation: spin 1s ease infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -80,7 +92,12 @@
           </thead>
           <tbody class="bg-white divide-y divide-gray-200" id="recentCarsList">
             <tr>
-              <td colspan="7" class="px-6 py-4 text-center text-gray-500">Loading cars...</td>
+              <td colspan="7" class="px-6 py-4 text-center">
+                <div class="flex justify-center">
+                  <div class="spinner"></div>
+                </div>
+                <p class="mt-2 text-gray-500">Loading cars...</p>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -89,115 +106,108 @@
   </section>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Use simulated data for now, would be replaced with real API calls
-      const mockCars = [
-        {
-          id: '1',
-          make: 'Toyota',
-          model: 'Prado J150',
-          year: '2013',
-          price: '3150000',
-          mileage: '122400',
-          engine: '2700cc',
-          transmission: 'Automatic',
-          fuel: 'Petrol',
-          isFeatured: true,
-          images: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b'
-        },
-        {
-          id: '2',
-          make: 'Mercedes',
-          model: 'E220d AMG Line',
-          year: '2017',
-          price: '4350000',
-          mileage: '51800',
-          engine: '2200cc',
-          transmission: 'Automatic',
-          fuel: 'Diesel',
-          isFeatured: true,
-          images: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888'
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        const response = await fetch('/.netlify/functions/get-cars');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch car data');
         }
-      ];
-      
-      // Update dashboard counts
-      document.getElementById('totalCarsCount').textContent = mockCars.length;
-      document.getElementById('featuredCarsCount').textContent = 
-        mockCars.filter(car => car.isFeatured).length;
-      
-      // Render recent cars
-      const recentCarsList = document.getElementById('recentCarsList');
-      
-      if (mockCars.length === 0) {
-        recentCarsList.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No cars found</td></tr>';
-        return;
+        
+        const data = await response.json();
+        const cars = data.cars || [];
+        
+        // Update dashboard counts
+        document.getElementById('totalCarsCount').textContent = cars.length;
+        document.getElementById('featuredCarsCount').textContent = 
+          cars.filter(car => car.isFeatured).length;
+        
+        // Render recent cars (up to 5)
+        const recentCarsList = document.getElementById('recentCarsList');
+        
+        if (cars.length === 0) {
+          recentCarsList.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No cars found</td></tr>';
+          return;
+        }
+        
+        recentCarsList.innerHTML = '';
+        
+        // Sort cars by date added (newest first) and take the 5 most recent
+        const recentCars = [...cars]
+          .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
+          .slice(0, 5);
+        
+        recentCars.forEach(car => {
+          // Get first image from comma-separated list
+          const firstImage = car.images ? car.images.split(',')[0] : '../images/placeholder.jpg';
+          
+          const row = document.createElement('tr');
+          
+          // Create image cell
+          const imageCell = document.createElement('td');
+          imageCell.className = 'px-6 py-4 whitespace-nowrap';
+          const image = document.createElement('img');
+          image.src = firstImage;
+          image.alt = `${car.make} ${car.model}`;
+          image.className = 'h-16 w-24 object-cover rounded';
+          imageCell.appendChild(image);
+          
+          // Create car name cell
+          const nameCell = document.createElement('td');
+          nameCell.className = 'px-6 py-4 whitespace-nowrap';
+          nameCell.innerHTML = `<div class="text-sm font-medium text-gray-900">${car.make} ${car.model}</div>
+                               <div class="text-sm text-gray-500">${car.engine || ''} ${car.transmission || ''}</div>`;
+          
+          // Create year cell
+          const yearCell = document.createElement('td');
+          yearCell.className = 'px-6 py-4 whitespace-nowrap';
+          yearCell.textContent = car.year;
+          
+          // Create price cell
+          const priceCell = document.createElement('td');
+          priceCell.className = 'px-6 py-4 whitespace-nowrap';
+          priceCell.innerHTML = `<div class="text-sm font-medium text-gray-900">KSh ${parseInt(car.price).toLocaleString()}</div>`;
+          
+          // Create featured cell
+          const featuredCell = document.createElement('td');
+          featuredCell.className = 'px-6 py-4 whitespace-nowrap';
+          featuredCell.innerHTML = car.isFeatured 
+            ? '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Yes</span>' 
+            : '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">No</span>';
+          
+          // Create date cell
+          const dateCell = document.createElement('td');
+          dateCell.className = 'px-6 py-4 whitespace-nowrap';
+          const date = car.dateAdded ? new Date(car.dateAdded).toLocaleDateString() : 'N/A';
+          dateCell.textContent = date;
+          
+          // Create actions cell
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium';
+          actionsCell.innerHTML = `
+            <a href="./add-car.html?id=${car.id}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+            <a href="#" class="text-red-600 hover:text-red-900" data-id="${car.id}">Delete</a>
+          `;
+          
+          // Append all cells to the row
+          row.appendChild(imageCell);
+          row.appendChild(nameCell);
+          row.appendChild(yearCell);
+          row.appendChild(priceCell);
+          row.appendChild(featuredCell);
+          row.appendChild(dateCell);
+          row.appendChild(actionsCell);
+          
+          // Add row to the table
+          recentCarsList.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error fetching cars:', error);
+        document.getElementById('totalCarsCount').textContent = '0';
+        document.getElementById('featuredCarsCount').textContent = '0';
+        document.getElementById('recentCarsList').innerHTML = 
+          '<tr><td colspan="7" class="px-6 py-4 text-center text-red-500">Failed to load cars. Please try again later.</td></tr>';
       }
-      
-      recentCarsList.innerHTML = '';
-      
-      mockCars.forEach(car => {
-        // Get first image from comma-separated list
-        const firstImage = car.images ? car.images.split(',')[0] : '../images/placeholder.jpg';
-        
-        const row = document.createElement('tr');
-        
-        // Create image cell
-        const imageCell = document.createElement('td');
-        imageCell.className = 'px-6 py-4 whitespace-nowrap';
-        const image = document.createElement('img');
-        image.src = firstImage;
-        image.alt = `${car.make} ${car.model}`;
-        image.className = 'h-16 w-24 object-cover rounded';
-        imageCell.appendChild(image);
-        
-        // Create car name cell
-        const nameCell = document.createElement('td');
-        nameCell.className = 'px-6 py-4 whitespace-nowrap';
-        nameCell.innerHTML = `<div class="text-sm font-medium text-gray-900">${car.make} ${car.model}</div>
-                             <div class="text-sm text-gray-500">${car.engine || ''} ${car.transmission || ''}</div>`;
-        
-        // Create year cell
-        const yearCell = document.createElement('td');
-        yearCell.className = 'px-6 py-4 whitespace-nowrap';
-        yearCell.textContent = car.year;
-        
-        // Create price cell
-        const priceCell = document.createElement('td');
-        priceCell.className = 'px-6 py-4 whitespace-nowrap';
-        priceCell.innerHTML = `<div class="text-sm font-medium text-gray-900">KSh ${Number(car.price).toLocaleString()}</div>`;
-        
-        // Create featured cell
-        const featuredCell = document.createElement('td');
-        featuredCell.className = 'px-6 py-4 whitespace-nowrap';
-        featuredCell.innerHTML = car.isFeatured 
-          ? '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Yes</span>' 
-          : '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">No</span>';
-        
-        // Create date cell
-        const dateCell = document.createElement('td');
-        dateCell.className = 'px-6 py-4 whitespace-nowrap';
-        dateCell.textContent = new Date().toLocaleDateString();
-        
-        // Create actions cell
-        const actionsCell = document.createElement('td');
-        actionsCell.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium';
-        actionsCell.innerHTML = `
-          <a href="./add-car.html?id=${car.id}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-          <a href="#" class="text-red-600 hover:text-red-900" data-id="${car.id}">Delete</a>
-        `;
-        
-        // Append all cells to the row
-        row.appendChild(imageCell);
-        row.appendChild(nameCell);
-        row.appendChild(yearCell);
-        row.appendChild(priceCell);
-        row.appendChild(featuredCell);
-        row.appendChild(dateCell);
-        row.appendChild(actionsCell);
-        
-        // Add row to the table
-        recentCarsList.appendChild(row);
-      });
     });
   </script>
 </body>

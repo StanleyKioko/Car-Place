@@ -1,15 +1,9 @@
 {
-  "name": "car-web",
+  "name": "blobe-cars",
   "version": "1.0.0",
+  "description": "Car dealership website",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "netlify": "^22.1.3"
+    "netlify": "^13.1.10"
   }
 }

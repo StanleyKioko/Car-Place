@@ -27,6 +27,23 @@
       -webkit-text-fill-color: transparent;
       font-weight: bold;
     }
+    #loadingSpinner {
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #3b82f6;
+      animation: spin 1s ease infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -56,297 +73,10 @@
 
   <!-- Car Listings Section -->
   <section class="container mx-auto px-4 py-12">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      
-      <!-- Toyota Prado J150 -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Toyota Prado" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Prado J150</h3>
-          <p class="text-gray-600 mb-4">Black • 7 seater • 2WD/4WD optional • Grey fabric interior</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2013</p>
-            <p><strong>Mileage:</strong> 122,400 km</p>
-            <p><strong>Engine:</strong> 2700cc</p>
-            <p><strong>Fuel:</strong> Petrol</p>
-            <p><strong>Transmission:</strong> Automatic</p>
-            <p><strong>Features:</strong> Trade-in accepted</p>
-            <p class="special-price col-span-2"><strong>Price:</strong> KSh 3,150,000 (Slightly Negotiable)</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="carListings">
+      <div id="loadingSpinner" class="col-span-3">
+        <div class="spinner"></div>
       </div>
-
-      <!-- Toyota Crown -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000&auto=format&fit=crop" alt="Toyota Crown" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Crown</h3>
-          <p class="text-gray-600 mb-4">Xenon headlights • Push to start • New tyres all round</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2014</p>
-            <p><strong>Engine:</strong> 2500cc</p>
-            <p><strong>Transmission:</strong> Automatic</p>
-            <p><strong>Features:</strong> Trade-in accepted</p>
-            <p><strong>Price:</strong> KSh 1,750,000</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Suzuki Jimny -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Suzuki Jimny" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Suzuki Jimny</h3>
-          <p class="text-gray-600 mb-4">Green • 2-door • 4-seater • 2WD/4WD • Heated seats</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2022</p>
-            <p><strong>Mileage:</strong> 9,070 km</p>
-            <p><strong>Engine:</strong> 650cc</p>
-            <p><strong>Transmission:</strong> 5-Speed Manual</p>
-            <p><strong>Features:</strong> Lane assist, Pre-collision</p>
-            <p class="special-price col-span-2"><strong>Price:</strong> KSh 2,380,000 (Pocket Price)</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Subaru Forester 2016 (Fresh Import) -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden border-2 border-green-200">
-        <div class="bg-green-100 px-4 py-2">
-          <span class="fresh-import text-sm">FRESH IMPORT</span>
-        </div>
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Subaru Forester" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Subaru Forester SJ5</h3>
-          <p class="text-gray-600 mb-4">Black • Newshape • Non Turbo • Eyesight • Dark leather</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2016</p>
-            <p><strong>Engine:</strong> 1990cc</p>
-            <p><strong>Transmission:</strong> Automatic</p>
-            <p><strong>Features:</strong> X-Mode, Lane assist</p>
-            <p><strong>Price:</strong> KSh 2,580,000</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Subaru Forester 2014 -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Subaru Forester" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Subaru Forester</h3>
-          <p class="text-gray-600 mb-4">Silver • Non Turbo • Eyesight • Leather interior</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2014</p>
-            <p><strong>Engine:</strong> 2000cc</p>
-            <p><strong>Fuel:</strong> Petrol</p>
-            <p><strong>Transmission:</strong> Automatic</p>
-            <p><strong>Features:</strong> Electric power seats</p>
-            <p><strong>Price:</strong> KSh 1,750,000</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Toyota Fielder 2014 -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Toyota Fielder" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Fielder</h3>
-          <p class="text-gray-600 mb-4">Non hybrid • 2WD • New tyres all round</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2014</p>
-            <p><strong>Engine:</strong> 1500cc</p>
-            <p><strong>Fuel:</strong> Petrol</p>
-            <p><strong>Transmission:</strong> Automatic</p>
-            <p><strong>Features:</strong> Trade-in accepted</p>
-            <p><strong>Price:</strong> KSh 1,100,000</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Toyota Allion -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Toyota Allion" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Allion</h3>
-          <p class="text-gray-600 mb-4">White • Valvematic • Original DVD screen</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2014</p>
-            <p><strong>Mileage:</strong> 110,000 km</p>
-            <p><strong>Engine:</strong> 1790cc</p>
-            <p><strong>Transmission:</strong> Automatic</p>
-            <p><strong>Features:</strong> Dark fabric interior</p>
-            <p class="special-price col-span-2"><strong>Price:</strong> KSh 1,390,000 (Slightly Negotiable)</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Nissan X-Trail 2017 -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="Nissan X-Trail.jpg" alt="Nissan X-Trail" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Nissan X-Trail</h3>
-          <p class="text-gray-600 mb-4">7 seater • Black leather • Reverse camera • Push to start</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2017</p>
-            <p><strong>Mileage:</strong> 118,600 km</p>
-            <p><strong>Engine:</strong> 2000cc</p>
-            <p><strong>Fuel:</strong> Petrol</p>
-            <p><strong>Features:</strong> Seat warmers, Parking sensors</p>
-            <p><strong>Price:</strong> KSh 2,050,000</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- BMW X5 M-Sport -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="BMW X5" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">BMW X5 M-Sport</h3>
-          <p class="text-gray-600 mb-4">Panoramic sunroof • Leather interior • Accident free</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2008</p>
-            <p><strong>Engine:</strong> 3000cc</p>
-            <p><strong>Fuel:</strong> Petrol</p>
-            <p><strong>Features:</strong> Original paint, New tyres</p>
-            <p><strong>Price:</strong> KSh 1,750,000 (Negotiable)</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Mercedes Benz E220d AMG -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden border-2 border-yellow-200">
-        <div class="bg-yellow-100 px-4 py-2">
-          <span class="text-yellow-800 font-bold text-sm">FULLY LOADED • OFFER PRICE</span>
-        </div>
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Mercedes E220d" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Mercedes Benz E220d AMG Line</h3>
-          <p class="text-gray-600 mb-4">Pearl White • 360° Camera • Burmester Audio • Head-up display</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2017</p>
-            <p><strong>Mileage:</strong> 51,800 km</p>
-            <p><strong>Engine:</strong> 2200cc</p>
-            <p><strong>Fuel:</strong> Diesel</p>
-            <p><strong>Features:</strong> Panoramic sunroof, AMG rims</p>
-            <p class="special-price col-span-2"><strong>Price:</strong> KSh 4,350,000 (Slightly Negotiable)</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Toyota Mark II -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Toyota Mark II" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Mark II</h3>
-          <p class="text-gray-600 mb-4">Gray leather • Heavy music system • Nice wooden finish</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2002</p>
-            <p><strong>Engine:</strong> 1990cc</p>
-            <p><strong>Transmission:</strong> Automatic</p>
-            <p><strong>Features:</strong> Well maintained</p>
-            <p><strong>Price:</strong> KSh 495,000</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Nissan X-Trail 2014 -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="Nissan X-Trail.jpg" alt="Nissan X-Trail" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Nissan X-Trail</h3>
-          <p class="text-gray-600 mb-4">Parking sensors • Reverse camera • Optional 4WD</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2014</p>
-            <p><strong>Engine:</strong> 1980cc</p>
-            <p><strong>Fuel:</strong> Petrol</p>
-            <p><strong>Features:</strong> Dark leather, Push to start</p>
-            <p><strong>Price:</strong> KSh 1,600,000</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Toyota Fielder 2013 Hybrid -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Toyota Fielder" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Fielder Hybrid</h3>
-          <p class="text-gray-600 mb-4">Black • Half leather/fabric • Xenon headlights</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2013</p>
-            <p><strong>Engine:</strong> 1500cc</p>
-            <p><strong>Fuel:</strong> Hybrid</p>
-            <p><strong>Transmission:</strong> Automatic</p>
-            <p><strong>Features:</strong> Trade-in accepted</p>
-            <p><strong>Price:</strong> KSh 1,270,000</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Toyota Esquire -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Toyota Esquire" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Esquire</h3>
-          <p class="text-gray-600 mb-4">Automatic powered doors • Xenon headlights • Dark leather/fabric</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2016</p>
-            <p><strong>Mileage:</strong> 134,600 km</p>
-            <p><strong>Engine:</strong> 2000cc</p>
-            <p><strong>Fuel:</strong> Petrol</p>
-            <p><strong>Features:</strong> New tyres, 15" alloys</p>
-            <p><strong>Price:</strong> KSh 1,900,000</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Mercedes Benz C200 -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Mercedes C200" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Mercedes Benz C200</h3>
-          <p class="text-gray-600 mb-4">Pearl White • Classic & Sport modes • Black leather</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2009</p>
-            <p><strong>Mileage:</strong> 143,400 km</p>
-            <p><strong>Engine:</strong> 1790cc</p>
-            <p><strong>Features:</strong> Heated seats, Electric seats</p>
-            <p class="special-price col-span-2"><strong>Price:</strong> KSh 1,300,000 (Slightly Negotiable)</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Toyota Rav4 -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1000&auto=format&fit=crop" alt="Toyota Rav4" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Rav4</h3>
-          <p class="text-gray-600 mb-4">Silver • Grey fabric interior • Good tires all round</p>
-          <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p><strong>Year:</strong> 2004</p>
-            <p><strong>Mileage:</strong> 177,500 km</p>
-            <p><strong>Engine:</strong> 1790cc</p>
-            <p><strong>Transmission:</strong> Automatic</p>
-            <p><strong>Features:</strong> 16" original alloys</p>
-            <p class="special-price col-span-2"><strong>Price:</strong> KSh 795,000 (Slightly Negotiable)</p>
-          </div>
-          <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
     </div>
   </section>
 
@@ -357,5 +87,93 @@
       <p class="mt-2">Contact us: <a href="mailto:info@blobestanocars.com" class="underline">info@blobestanocars.com</a> | +254 708967800</p>
     </div>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      const carListingsContainer = document.getElementById('carListings');
+
+      try {
+        // Show loading spinner
+        document.getElementById('loadingSpinner').style.display = 'flex';
+        
+        // Fetch car data from Netlify function
+        const response = await fetch('/.netlify/functions/get-cars');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch car data');
+        }
+        
+        const { cars } = await response.json();
+        
+        // Hide loading spinner
+        document.getElementById('loadingSpinner').style.display = 'none';
+        
+        // If no cars found, show a message
+        if (!cars || cars.length === 0) {
+          carListingsContainer.innerHTML = `
+            <div class="col-span-3 text-center py-12">
+              <p class="text-gray-500">No cars available at the moment. Please check back later.</p>
+            </div>
+          `;
+          return;
+        }
+        
+        // Clear the container (removing the loading spinner)
+        carListingsContainer.innerHTML = '';
+        
+        // Loop through cars and create HTML for each
+        cars.forEach(car => {
+          // Get first image from comma-separated list, or use a placeholder
+          const firstImage = car.images ? car.images.split(',')[0] : 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b';
+          
+          // Create card element
+          const carCard = document.createElement('div');
+          carCard.className = 'car-card bg-white rounded-lg shadow-lg overflow-hidden';
+          
+          // Add featured styling if car is featured
+          if (car.isFeatured) {
+            carCard.classList.add('border-2', 'border-yellow-200');
+            carCard.innerHTML = `
+              <div class="bg-yellow-100 px-4 py-2">
+                <span class="text-yellow-800 font-bold text-xs">FEATURED</span>
+              </div>
+            `;
+          }
+          
+          // Add car details
+          carCard.innerHTML += `
+            <img src="${firstImage}" alt="${car.make} ${car.model}" class="w-full h-48 object-cover">
+            <div class="p-6">
+              <h3 class="text-xl font-bold font-poppins mb-2">${car.make} ${car.model}</h3>
+              <p class="text-gray-600 mb-4">${car.colour || ''} ${car.features ? '• ' + car.features.split(',').slice(0, 2).join(' • ') : ''}</p>
+              <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                <p><strong>Year:</strong> ${car.year || 'N/A'}</p>
+                <p><strong>Mileage:</strong> ${car.mileage ? car.mileage + ' km' : 'N/A'}</p>
+                <p><strong>Engine:</strong> ${car.engine || 'N/A'}</p>
+                <p><strong>Fuel:</strong> ${car.fuel || 'N/A'}</p>
+                <p><strong>Transmission:</strong> ${car.transmission || 'N/A'}</p>
+                <p><strong>Features:</strong> ${car.features ? car.features.split(',').slice(0, 2).join(', ') : 'N/A'}</p>
+                <p class="special-price col-span-2"><strong>Price:</strong> KSh ${parseInt(car.price).toLocaleString()}</p>
+              </div>
+              <a href="#" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+            </div>
+          `;
+          
+          // Add to the container
+          carListingsContainer.appendChild(carCard);
+        });
+        
+      } catch (error) {
+        console.error('Error fetching cars:', error);
+        document.getElementById('loadingSpinner').style.display = 'none';
+        carListingsContainer.innerHTML = `
+          <div class="col-span-3 text-center py-12">
+            <p class="text-red-500">Error loading cars. Please try again later.</p>
+            <p class="text-gray-500 mt-2">If the problem persists, please contact the administrator.</p>
+          </div>
+        `;
+      }
+    });
+  </script>
 </body>
 </html>

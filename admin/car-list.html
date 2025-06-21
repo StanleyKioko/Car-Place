@@ -10,6 +10,18 @@
     body {
       font-family: 'Roboto', sans-serif;
     }
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #3b82f6;
+      animation: spin 1s ease infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -36,14 +48,182 @@
     </div>
   </section>
 
-  <!-- Rest of your HTML remains the same -->
+  <!-- Car List Section -->
+  <section class="container mx-auto px-4 py-8">
+    <div class="flex justify-between mb-6">
+      <input type="text" id="searchInput" placeholder="Search cars..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <a href="https://app.netlify.com/sites/blobecars/forms/car-submissions" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">View in Netlify</a>
+    </div>
+    
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Car</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Featured</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Added</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200" id="carsList">
+            <tr>
+              <td colspan="7" class="px-6 py-4 text-center">
+                <div class="flex justify-center">
+                  <div class="spinner"></div>
+                </div>
+                <p class="mt-2 text-gray-500">Loading cars...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
-  <!-- Update the Netlify link with a placeholder that you'll replace later -->
-  <div class="flex justify-between mb-6">
-    <input type="text" id="searchInput" placeholder="Search cars..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-    <a href="https://app.netlify.com/sites/blobecars/forms/car-submissions" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">View in Netlify</a>
-  </div>
-
-  <!-- Your JavaScript code remains the same -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      const carsListTableBody = document.getElementById('carsList');
+      const searchInput = document.getElementById('searchInput');
+      
+      // Load cars data
+      let allCars = [];
+      
+      try {
+        const response = await fetch('/.netlify/functions/get-cars');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch car data');
+        }
+        
+        const data = await response.json();
+        allCars = data.cars || [];
+        
+        // Display all cars initially
+        renderCars(allCars);
+        
+      } catch (error) {
+        console.error('Error fetching cars:', error);
+        carsListTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-6 py-4 text-center text-red-500">
+              Failed to load cars. Please try again later.
+            </td>
+          </tr>
+        `;
+      }
+      
+      // Filter cars based on search input
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        const filteredCars = allCars.filter(car => {
+          return (
+            car.make?.toLowerCase().includes(searchTerm) ||
+            car.model?.toLowerCase().includes(searchTerm) ||
+            car.year?.toString().includes(searchTerm)
+          );
+        });
+        
+        renderCars(filteredCars);
+      });
+      
+      function renderCars(cars) {
+        if (cars.length === 0) {
+          carsListTableBody.innerHTML = `
+            <tr>
+              <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                No cars found matching your search.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+        
+        carsListTableBody.innerHTML = '';
+        
+        cars.forEach(car => {
+          // Get first image from comma-separated list
+          const firstImage = car.images ? car.images.split(',')[0] : '../images/placeholder.jpg';
+          
+          const row = document.createElement('tr');
+          
+          // Create image cell
+          const imageCell = document.createElement('td');
+          imageCell.className = 'px-6 py-4 whitespace-nowrap';
+          const image = document.createElement('img');
+          image.src = firstImage;
+          image.alt = `${car.make} ${car.model}`;
+          image.className = 'h-16 w-24 object-cover rounded';
+          imageCell.appendChild(image);
+          
+          // Create car name cell
+          const nameCell = document.createElement('td');
+          nameCell.className = 'px-6 py-4 whitespace-nowrap';
+          nameCell.innerHTML = `<div class="text-sm font-medium text-gray-900">${car.make} ${car.model}</div>
+                               <div class="text-sm text-gray-500">${car.engine || ''} ${car.transmission || ''}</div>`;
+          
+          // Create year cell
+          const yearCell = document.createElement('td');
+          yearCell.className = 'px-6 py-4 whitespace-nowrap';
+          yearCell.textContent = car.year;
+          
+          // Create price cell
+          const priceCell = document.createElement('td');
+          priceCell.className = 'px-6 py-4 whitespace-nowrap';
+          priceCell.innerHTML = `<div class="text-sm font-medium text-gray-900">KSh ${parseInt(car.price).toLocaleString()}</div>`;
+          
+          // Create featured cell
+          const featuredCell = document.createElement('td');
+          featuredCell.className = 'px-6 py-4 whitespace-nowrap';
+          featuredCell.innerHTML = car.isFeatured 
+            ? '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Yes</span>' 
+            : '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">No</span>';
+          
+          // Create date cell
+          const dateCell = document.createElement('td');
+          dateCell.className = 'px-6 py-4 whitespace-nowrap';
+          const date = car.dateAdded ? new Date(car.dateAdded).toLocaleDateString() : 'N/A';
+          dateCell.textContent = date;
+          
+          // Create actions cell
+          const actionsCell = document.createElement('td');
+          actionsCell.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium';
+          actionsCell.innerHTML = `
+            <a href="./add-car.html?id=${car.id}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+            <a href="#" class="text-red-600 hover:text-red-900 delete-car" data-id="${car.id}">Delete</a>
+          `;
+          
+          // Append all cells to the row
+          row.appendChild(imageCell);
+          row.appendChild(nameCell);
+          row.appendChild(yearCell);
+          row.appendChild(priceCell);
+          row.appendChild(featuredCell);
+          row.appendChild(dateCell);
+          row.appendChild(actionsCell);
+          
+          // Add row to the table
+          carsListTableBody.appendChild(row);
+        });
+        
+        // Add event listeners for delete buttons
+        document.querySelectorAll('.delete-car').forEach(button => {
+          button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const carId = this.getAttribute('data-id');
+            if (confirm('Are you sure you want to delete this car?')) {
+              // In a real app, you would call a function to delete the car
+              // For now, just show an alert as we can't delete from forms yet
+              alert('Delete functionality requires additional server-side code. This is a UI demo.');
+            }
+          });
+        });
+      }
+    });
+  </script>
 </body>
 </html>

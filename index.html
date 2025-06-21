@@ -22,6 +22,23 @@
       background-size: cover;
       background-position: center;
     }
+    #featuredCarsLoadingSpinner {
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #3b82f6;
+      animation: spin 1s ease infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -32,7 +49,7 @@
         Blobe Stano Cars
       </div>
       <div class="space-x-6">
-        <a href="index.html" class="text-gray-700 hover:text-blue-600">Home</a>
+        <a href="index.html" class="text-blue-600 font-semibold">Home</a>
         <a href="cars.html" class="text-gray-700 hover:text-blue-600">Cars</a>
         <a href="contact.html" class="text-gray-700 hover:text-blue-600">Contact</a>
         <a href="about.html" class="text-gray-700 hover:text-blue-600">About</a>
@@ -51,93 +68,183 @@
   </section>
 
   <!-- Featured Cars Preview -->
-  <!-- Featured Cars Preview -->
   <section class="container mx-auto px-4 py-12">
     <h2 class="text-3xl font-bold text-center font-poppins mb-8">Featured Cars</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- Featured Car 1 -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1541348263662-e068662d82af?q=80&w=1000&auto=format&fit=crop" alt="Toyota Corolla" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Corolla</h3>
-          <p class="text-gray-600 mb-4">Reliable and fuel-efficient sedan.</p>
-          <p class="text-2xl font-bold text-blue-600">KSh 1,850,000</p>
-          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="featuredCars">
+      <div id="featuredCarsLoadingSpinner" class="col-span-3">
+        <div class="spinner"></div>
       </div>
+    </div>
+  </section>
 
-      <!-- Featured Car 2 - Mercedes E220d AMG -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden border-2 border-yellow-200">
-        <div class="bg-yellow-100 px-4 py-2">
-          <span class="text-yellow-800 font-bold text-xs">PREMIUM • FULLY LOADED</span>
+  <!-- Why Choose Us -->
+  <section class="bg-gray-50 py-16">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center font-poppins mb-12">Why Choose Us</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Quality Selection -->
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Quality Selection</h3>
+          <p class="text-gray-600">All our vehicles undergo rigorous quality checks before being listed.</p>
         </div>
-        <img src="https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1000&auto=format&fit=crop" alt="Mercedes E220d" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Mercedes E220d AMG</h3>
-          <p class="text-gray-600 mb-4">Pearl White • 360° Camera • Burmester Audio</p>
-          <p class="text-2xl font-bold text-red-600">KSh 4,350,000</p>
-          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+        
+        <!-- Competitive Pricing -->
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Competitive Pricing</h3>
+          <p class="text-gray-600">We offer the best market rates with flexible payment options.</p>
         </div>
-      </div>
-
-      <!-- Featured Car 3 - Nissan X-Trail -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="Nissan X-Trail.jpg" alt="Nissan X-Trail" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Nissan X-Trail</h3>
-          <p class="text-gray-600 mb-4">7 seater • Black leather • Push to start</p>
-          <p class="text-2xl font-bold text-blue-600">KSh 2,050,000</p>
-          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+        
+        <!-- After-sales Support -->
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">After-sales Support</h3>
+          <p class="text-gray-600">Excellent customer service and maintenance support after purchase.</p>
         </div>
-      </div>
-
-      <!-- Featured Car 4 - Suzuki Jimny -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden border-2 border-green-200">
-        <div class="bg-green-100 px-4 py-2">
-          <span class="text-green-800 font-bold text-xs">2022 MODEL • LOW MILEAGE</span>
-        </div>
-        <img src="https://images.unsplash.com/photo-1614200187524-dc4b892acf16?q=80&w=1000&auto=format&fit=crop" alt="Suzuki Jimny" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Suzuki Jimny</h3>
-          <p class="text-gray-600 mb-4">Green • 4WD • Only 9,070 km • Heated seats</p>
-          <p class="text-2xl font-bold text-blue-600">KSh 2,380,000</p>
-          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Featured Car 5 - Toyota Prado -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000&auto=format&fit=crop" alt="Toyota Prado" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Prado J150</h3>
-          <p class="text-gray-600 mb-4">Black • 7 seater • 2WD/4WD • 2700cc</p>
-          <p class="text-2xl font-bold text-blue-600">KSh 3,150,000</p>
-          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-        </div>
-      </div>
-
-      <!-- Featured Car 6 - Toyota Mark II (Budget Option) -->
-      <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden border-2 border-blue-200">
-        <div class="bg-blue-100 px-4 py-2">
-          <span class="text-blue-800 font-bold text-xs">BUDGET FRIENDLY • WELL MAINTAINED</span>
-        </div>
-        <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1000&auto=format&fit=crop" alt="Toyota Mark II" class="w-full h-48 object-cover">
-        <div class="p-6">
-          <h3 class="text-xl font-bold font-poppins mb-2">Toyota Mark II</h3>
-          <p class="text-gray-600 mb-4">Gray leather • Heavy music system • Wooden finish</p>
-          <p class="text-2xl font-bold text-green-600">KSh 495,000</p>
-          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+        
+        <!-- Trade-in Options -->
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Trade-in Options</h3>
+          <p class="text-gray-600">Upgrade your current vehicle with our flexible trade-in programs.</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="bg-gray-800 text-white py-6">
-    <div class="container mx-auto px-4 text-center">
-      <p>&copy; 2025 Blobe Stano Cars. All rights reserved.</p>
-      <p class="mt-2">Contact us: <a href="mailto:info@blobestanocars.com" class="underline">info@blobestanocars.com</a> | +254 708967800</p>
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- About -->
+        <div>
+          <h3 class="text-xl font-bold mb-4">About Blobe Stano Cars</h3>
+          <p class="text-gray-300">We are a premier car dealership in Kenya, specializing in quality vehicles at affordable prices. Our commitment is to provide exceptional service and value to our clients.</p>
+        </div>
+        
+        <!-- Quick Links -->
+        <div>
+          <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+          <ul class="space-y-2">
+            <li><a href="index.html" class="text-gray-300 hover:text-white">Home</a></li>
+            <li><a href="cars.html" class="text-gray-300 hover:text-white">Cars</a></li>
+            <li><a href="contact.html" class="text-gray-300 hover:text-white">Contact</a></li>
+            <li><a href="about.html" class="text-gray-300 hover:text-white">About</a></li>
+          </ul>
+        </div>
+        
+        <!-- Contact Info -->
+        <div>
+          <h3 class="text-xl font-bold mb-4">Contact Information</h3>
+          <p class="text-gray-300">Nairobi, Kenya</p>
+          <p class="text-gray-300">Phone: +254 708967800</p>
+          <p class="text-gray-300">Email: info@blobestanocars.com</p>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 mt-8 pt-4 text-center">
+        <p>&copy; 2025 Blobe Stano Cars. All rights reserved.</p>
+      </div>
     </div>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      const featuredCarsContainer = document.getElementById('featuredCars');
+      
+      try {
+        // Show loading spinner
+        document.getElementById('featuredCarsLoadingSpinner').style.display = 'flex';
+        
+        // Fetch car data from Netlify function
+        const response = await fetch('/.netlify/functions/get-cars');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch car data');
+        }
+        
+        const { cars } = await response.json();
+        
+        // Hide loading spinner
+        document.getElementById('featuredCarsLoadingSpinner').style.display = 'none';
+        
+        // Filter only featured cars and limit to 6
+        const featuredCars = cars ? cars.filter(car => car.isFeatured).slice(0, 6) : [];
+        
+        // If no featured cars found, show default content
+        if (featuredCars.length === 0) {
+          featuredCarsContainer.innerHTML = `
+            <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1541348263662-e068662d82af?q=80&w=1000&auto=format&fit=crop" alt="Toyota Corolla" class="w-full h-48 object-cover">
+              <div class="p-6">
+                <h3 class="text-xl font-bold font-poppins mb-2">Toyota Corolla</h3>
+                <p class="text-gray-600 mb-4">Reliable and fuel-efficient sedan.</p>
+                <p class="text-2xl font-bold text-blue-600">KSh 1,850,000</p>
+                <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+              </div>
+            </div>
+          `;
+          return;
+        }
+        
+        // Clear the container
+        featuredCarsContainer.innerHTML = '';
+        
+        // Loop through featured cars and create HTML for each
+        featuredCars.forEach(car => {
+          // Get first image from comma-separated list, or use a placeholder
+          const firstImage = car.images ? car.images.split(',')[0] : 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b';
+          
+          // Create card element
+          const carCard = document.createElement('div');
+          carCard.className = 'car-card bg-white rounded-lg shadow-lg overflow-hidden';
+          
+          // Add border if car is special
+          carCard.classList.add('border-2', 'border-yellow-200');
+          carCard.innerHTML = `
+            <div class="bg-yellow-100 px-4 py-2">
+              <span class="text-yellow-800 font-bold text-xs">FEATURED</span>
+            </div>
+            <img src="${firstImage}" alt="${car.make} ${car.model}" class="w-full h-48 object-cover">
+            <div class="p-6">
+              <h3 class="text-xl font-bold font-poppins mb-2">${car.make} ${car.model}</h3>
+              <p class="text-gray-600 mb-4">${car.colour || ''} ${car.features ? '• ' + car.features.split(',').slice(0, 2).join(' • ') : ''}</p>
+              <p class="text-2xl font-bold text-blue-600">KSh ${parseInt(car.price).toLocaleString()}</p>
+              <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+            </div>
+          `;
+          
+          // Add to the container
+          featuredCarsContainer.appendChild(carCard);
+        });
+        
+      } catch (error) {
+        console.error('Error fetching featured cars:', error);
+        document.getElementById('featuredCarsLoadingSpinner').style.display = 'none';
+        featuredCarsContainer.innerHTML = `
+          <div class="col-span-3 text-center py-12">
+            <p class="text-gray-500">Unable to load featured cars. Showing our standard selection.</p>
+          </div>
+        `;
+        // You could add your static featured cars here as a fallback
+      }
+    });
+  </script>
 </body>
 </html>
