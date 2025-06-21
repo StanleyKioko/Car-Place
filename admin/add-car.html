@@ -89,8 +89,26 @@
   <!-- Add Car Form -->
   <section class="container mx-auto px-4 py-8">
     <div class="bg-white p-6 rounded-lg shadow-lg">
+      <!-- Hidden form for Netlify to discover form fields at build time -->
+      <form name="car-submissions" netlify netlify-honeypot="bot-field" hidden>
+        <input type="text" name="make" />
+        <input type="text" name="model" />
+        <input type="number" name="year" />
+        <input type="text" name="engine" />
+        <input type="text" name="drive" />
+        <input type="text" name="colour" />
+        <input type="number" name="mileage" />
+        <input type="text" name="registration" />
+        <input type="number" name="price" />
+        <textarea name="features"></textarea>
+        <input type="text" name="images" />
+        <input type="checkbox" name="isFeatured" />
+        <input name="bot-field" />
+        <input type="hidden" name="form-name" value="car-submissions" />
+      </form>
+
       <!-- Form with direct Netlify form handling -->
-      <form name="car-submissions" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="addCarForm" class="space-y-6">
+      <form name="car-submissions" method="POST" action="/success.html" data-netlify="true" netlify-honeypot="bot-field" id="addCarForm" class="space-y-6">
         <input type="hidden" name="form-name" value="car-submissions">
         
         <!-- Honeypot field to prevent spam -->
@@ -149,6 +167,29 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="price">Price (KSh)*</label>
             <input type="number" id="price" name="price" required class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+        
+        <!-- Explicitly add fields that are expected by submission-created.js but missing -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="transmission">Transmission</label>
+            <select id="transmission" name="transmission" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select Transmission</option>
+              <option value="Automatic">Automatic</option>
+              <option value="Manual">Manual</option>
+              <option value="CVT">CVT</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="fuel">Fuel Type</label>
+            <select id="fuel" name="fuel" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select Fuel Type</option>
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="Electric">Electric</option>
+            </select>
           </div>
         </div>
 
@@ -349,18 +390,28 @@
         return;
       }
       
+      // Add form-name explicitly (important for Netlify forms)
+      formData.append("form-name", "car-submissions");
+      
+      // Check form size
+      const formDataString = new URLSearchParams(formData).toString();
+      console.log("Form data size:", formDataString.length, "bytes");
+      
+      // Use the simple HTML form submission instead of fetch for more reliable Netlify form handling
+      // This will use the action attribute of the form to redirect after submission
+      form.submit();
+      
+      /* Keeping this as a fallback if you want to revert to fetch-based submission
       // Create a fetch request to submit the form to Netlify
       fetch("/", {
         method: "POST",
         headers: { 
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Accept": "application/json"
+          "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: new URLSearchParams(formData).toString()
+        body: formDataString
       })
       .then(response => {
         console.log("Response status:", response.status);
-        console.log("Response headers:", [...response.headers.entries()]);
         
         // Print response body for debugging
         return response.text().then(text => {
@@ -387,7 +438,7 @@
               window.location.href = './car-list.html';
             }, 1500);
           } else {
-            throw new Error(`Server returned ${response.status}: ${text}`);
+            throw new Error(`Server returned ${response.status}`);
           }
         });
       })
@@ -396,8 +447,9 @@
         toggleLoading(false);
         
         // Show detailed error in console and a user-friendly message on screen
-        showErrorMessage(`Form submission failed: ${error.message}. Check console for details.`);
+        showErrorMessage("Form submission failed. Please try again later.");
       });
+      */
     });
   </script>
 </body>
