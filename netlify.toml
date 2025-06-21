@@ -7,3 +7,10 @@
   status = 302
   force = true
   conditions = {Success = true}
+
+# Fallback to handle any errors
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
