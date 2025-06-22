@@ -1,10 +1,7 @@
 exports.handler = async (event) => {
-  console.log("Function get-cars-v2 started");
+  console.log("Function get-cars started (using fetch API)");
   try {
-    // Dynamically import the netlify package
-    const { default: NetlifyAPI } = await import('netlify');
-    
-    // Initialize the Netlify API client
+    // Initialize the API variables
     const token = process.env.NETLIFY_API_TOKEN;
     const siteId = process.env.NETLIFY_SITE_ID;
     
@@ -24,17 +21,22 @@ exports.handler = async (event) => {
       };
     }
     
-    // Initialize client with the token
-    const client = new NetlifyAPI(token);
-    console.log("Netlify client initialized");
-    
-    // Get form submissions for the car-submissions form
+    // Use fetch API directly to get submissions
     console.log(`Attempting to fetch submissions for form 'car-submissions' on site ${siteId}`);
-    const submissions = await client.listFormSubmissions({
-      form_id: 'car-submissions',
-      site_id: siteId
+    
+    const response = await fetch(`https://api.netlify.com/api/v1/sites/${siteId}/forms/car-submissions/submissions`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
     
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Netlify API responded with ${response.status}: ${errorText}`);
+    }
+    
+    const submissions = await response.json();
     console.log(`Retrieved ${submissions.length} form submissions`);
     
     // Map and format submissions into car objects

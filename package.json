@@ -4,9 +4,16 @@
   "description": "Car dealership website",
   "main": "index.js",
   "dependencies": {
-    "netlify": "^13.1.10"
+    "netlify": "^13.1.10",
+    "@netlify/open-api": "^2.3.1",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "netlify-cli": "^16.0.0"
+  },
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step needed'",
+    "deploy": "netlify deploy --prod"
   }
 }
