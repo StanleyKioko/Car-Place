@@ -39,43 +39,6 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    /* Debug info styling */
-    .debug-info {
-      background: #ffe8e8;
-      border: 1px solid #ffb8b8;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 4px;
-      font-family: monospace;
-      white-space: pre-wrap;
-      max-height: 300px;
-      overflow-y: auto;
-      display: none; /* Hidden by default */
-    }
-    .debug-tools {
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .btn {
-      padding: 8px 16px;
-      border-radius: 4px;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background-color: #3b82f6;
-      color: white;
-    }
-    .btn-secondary {
-      background-color: #e5e7eb;
-      color: #374151;
-    }
-    .btn:hover {
-      opacity: 0.9;
-    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -107,14 +70,6 @@
   <!-- Featured Cars Preview -->
   <section class="container mx-auto px-4 py-12">
     <h2 class="text-3xl font-bold text-center font-poppins mb-8">Featured Cars</h2>
-    
-    <!-- Debug panel with more tools -->
-    <div class="debug-tools">
-      <button id="toggleDebug" class="btn btn-secondary">Show Debug Info</button>
-      <button id="loadCarsDirect" class="btn btn-primary">Load Sample Cars</button>
-      <button id="checkNetlifyEnv" class="btn btn-secondary">Check Netlify Status</button>
-    </div>
-    <div id="debugOutput" class="debug-info"></div>
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="featuredCars">
       <div id="featuredCarsLoadingSpinner" class="col-span-3">
@@ -260,62 +215,12 @@
       }
     ];
 
-    // Debug toggle functionality
-    document.getElementById('toggleDebug').addEventListener('click', function() {
-      const debugOutput = document.getElementById('debugOutput');
-      if (debugOutput.style.display === 'block') {
-        debugOutput.style.display = 'none';
-        this.textContent = 'Show Debug Info';
-      } else {
-        debugOutput.style.display = 'block';
-        this.textContent = 'Hide Debug Info';
-      }
-    });
-
-    // Load sample cars button
-    document.getElementById('loadCarsDirect').addEventListener('click', function() {
-      updateDebugInfo('Loading sample cars data...');
-      renderCars(sampleCars);
-    });
-
-    // Check Netlify environment button
-    document.getElementById('checkNetlifyEnv').addEventListener('click', async function() {
-      updateDebugInfo('Checking Netlify environment...');
-      try {
-        const response = await fetch('/.netlify/functions/get-cars');
-        updateDebugInfo(`Response status: ${response.status} ${response.statusText}`);
-        
-        const headers = {};
-        for (const [key, value] of response.headers.entries()) {
-          headers[key] = value;
-        }
-        updateDebugInfo(`Response headers: ${JSON.stringify(headers, null, 2)}`);
-        
-        if (response.ok) {
-          updateDebugInfo('Netlify function is accessible.');
-        } else {
-          updateDebugInfo('Netlify function returned an error status.');
-        }
-      } catch (error) {
-        updateDebugInfo(`Failed to access Netlify function: ${error.message}`);
-      }
-    });
-
-    // Helper function to update debug info
-    function updateDebugInfo(message) {
-      const debugOutput = document.getElementById('debugOutput');
-      const timestamp = new Date().toLocaleTimeString();
-      debugOutput.textContent += `[${timestamp}] ${message}\n`;
-      debugOutput.scrollTop = debugOutput.scrollHeight; // Auto-scroll to bottom
-    }
-
     // Function to render car cards
     function renderCars(cars) {
       const featuredCarsContainer = document.getElementById('featuredCars');
       document.getElementById('featuredCarsLoadingSpinner').style.display = 'none';
       
       if (!cars || cars.length === 0) {
-        updateDebugInfo('No cars to display, showing default content');
         featuredCarsContainer.innerHTML = `
           <div class="col-span-3 text-center py-12">
             <p class="text-gray-500">No cars available at this time. Please check back later.</p>
@@ -329,7 +234,6 @@
       
       // Limit to 6 cars
       const carsToShow = cars.slice(0, 6);
-      updateDebugInfo(`Rendering ${carsToShow.length} cars`);
       
       // Loop through cars and create HTML for each
       carsToShow.forEach(car => {
@@ -363,15 +267,10 @@
     // Main function to load cars
     async function loadCars() {
       const featuredCarsContainer = document.getElementById('featuredCars');
-      const debugOutput = document.getElementById('debugOutput');
-      
-      // Clear debug output
-      debugOutput.textContent = '';
       
       try {
         // Show loading spinner
         document.getElementById('featuredCarsLoadingSpinner').style.display = 'flex';
-        updateDebugInfo('Fetching car data from Netlify function...');
         
         // Set up timeout to handle slow connections
         const timeoutPromise = new Promise((_, reject) => {
@@ -385,29 +284,17 @@
         const response = await Promise.race([fetchPromise, timeoutPromise]);
         
         if (!response.ok) {
-          updateDebugInfo(`API Response not OK: Status ${response.status}`);
           throw new Error(`Failed to fetch car data: ${response.status}`);
         }
         
         const responseData = await response.json();
-        updateDebugInfo(`Response received with ${responseData.cars ? responseData.cars.length : 0} cars`);
-        
         const cars = responseData.cars || [];
         
-        // Log car count
-        updateDebugInfo(`Total cars returned: ${cars.length}`);
-        
-        // Log individual cars for debugging
-        cars.forEach((car, index) => {
-          updateDebugInfo(`Car ${index + 1}: ${car.make} ${car.model}, Featured: ${car.isFeatured}`);
-        });
-        
-        // Show all cars temporarily for troubleshooting
+        // Show all cars
         renderCars(cars);
         
       } catch (error) {
         console.error('Error fetching featured cars:', error);
-        updateDebugInfo(`ERROR: ${error.message}`);
         document.getElementById('featuredCarsLoadingSpinner').style.display = 'none';
         
         // Show error message and fallback to sample cars
@@ -427,7 +314,6 @@
         
         // Load sample cars as fallback
         setTimeout(() => {
-          updateDebugInfo('Loading sample cars as fallback...');
           renderCars(sampleCars);
         }, 1000);
       }
