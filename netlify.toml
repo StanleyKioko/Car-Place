@@ -8,10 +8,24 @@
   status = 302
   force = true
 
+# Add specific form submission success redirect
+[[redirects]]
+  from = "/admin/success"
+  to = "/admin/car-list.html"
+  status = 302
+  force = true
+
 # Add a specific redirect for form submissions
 [[redirects]]
   from = "/admin/car-submissions"
   to = "/admin/car-list.html"
+  status = 302
+  force = true
+
+# Add root success redirect
+[[redirects]]
+  from = "/success"
+  to = "/admin/car-list.html" 
   status = 302
   force = true
 

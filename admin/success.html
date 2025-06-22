@@ -3,10 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Submission Successful - Admin Panel</title>
+  <title>Success - Redirecting...</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
-  <meta http-equiv="refresh" content="3;url=./car-list.html">
+  <script>
+    // Automatic redirect after a short delay
+    window.onload = function() {
+      setTimeout(function() {
+        window.location.href = '/admin/car-list.html';
+      }, 1500);
+    }
+  </script>
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -14,15 +21,17 @@
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-    <svg class="w-20 h-20 text-green-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-    </svg>
-    <h1 class="text-3xl font-bold text-gray-800 mb-2 font-poppins">Success!</h1>
-    <p class="text-lg text-gray-600 mb-4">Your car has been successfully added.</p>
-    <p class="text-sm text-gray-500">Redirecting to car list in 3 seconds...</p>
-    <div class="mt-6">
-      <a href="./car-list.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition">
+  <div class="bg-white p-8 rounded-lg shadow-lg text-center max-w-md">
+    <div class="text-green-500 mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">Success!</h1>
+    <p class="text-gray-600 mb-4">Your car has been added successfully.</p>
+    <p class="text-blue-600 mb-4">Redirecting to car list...</p>
+    <div class="mt-4">
+      <a href="/admin/car-list.html" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
         View Car List
       </a>
     </div>
