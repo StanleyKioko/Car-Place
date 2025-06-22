@@ -1,5 +1,3 @@
-const NetlifyAPI = require('netlify');
-
 exports.handler = async (event) => {
   console.log("Function get-cars started");
   try {
