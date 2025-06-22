@@ -1,5 +1,5 @@
 exports.handler = async (event) => {
-  console.log("Function get-cars started");
+  console.log("Function get-cars-v2 started");
   try {
     // Dynamically import the netlify package
     const { default: NetlifyAPI } = await import('netlify');
