@@ -3,6 +3,9 @@ const NetlifyAPI = require('netlify');
 exports.handler = async (event) => {
   console.log("Function get-cars started");
   try {
+    // Dynamically import the netlify package
+    const { default: NetlifyAPI } = await import('netlify');
+    
     // Initialize the Netlify API client
     const token = process.env.NETLIFY_API_TOKEN;
     const siteId = process.env.NETLIFY_SITE_ID;

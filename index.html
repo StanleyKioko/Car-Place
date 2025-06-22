@@ -39,6 +39,43 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    /* Debug info styling */
+    .debug-info {
+      background: #ffe8e8;
+      border: 1px solid #ffb8b8;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+      display: none; /* Hidden by default */
+    }
+    .debug-tools {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background-color: #3b82f6;
+      color: white;
+    }
+    .btn-secondary {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -70,6 +107,15 @@
   <!-- Featured Cars Preview -->
   <section class="container mx-auto px-4 py-12">
     <h2 class="text-3xl font-bold text-center font-poppins mb-8">Featured Cars</h2>
+    
+    <!-- Debug panel with more tools -->
+    <div class="debug-tools">
+      <button id="toggleDebug" class="btn btn-secondary">Show Debug Info</button>
+      <button id="loadCarsDirect" class="btn btn-primary">Load Sample Cars</button>
+      <button id="checkNetlifyEnv" class="btn btn-secondary">Check Netlify Status</button>
+    </div>
+    <div id="debugOutput" class="debug-info"></div>
+    
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="featuredCars">
       <div id="featuredCarsLoadingSpinner" class="col-span-3">
         <div class="spinner"></div>
@@ -165,86 +211,230 @@
   </footer>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async function() {
+    // Sample car data to use when netlify functions fail
+    const sampleCars = [
+      {
+        id: "sample1",
+        make: "Toyota",
+        model: "Corolla",
+        year: "2023",
+        price: "1850000",
+        mileage: "5000",
+        engine: "1800cc",
+        transmission: "Automatic",
+        fuel: "Petrol",
+        colour: "White",
+        features: "Alloy Wheels,Bluetooth,Backup Camera",
+        images: "https://images.unsplash.com/photo-1541348263662-e068662d82af?q=80&w=1000&auto=format&fit=crop",
+        isFeatured: true
+      },
+      {
+        id: "sample2",
+        make: "Honda",
+        model: "CR-V",
+        year: "2022",
+        price: "3500000",
+        mileage: "15000",
+        engine: "2400cc",
+        transmission: "Automatic",
+        fuel: "Petrol",
+        colour: "Silver",
+        features: "Leather Seats,Sunroof,Navigation",
+        images: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?q=80&w=1000&auto=format&fit=crop",
+        isFeatured: true
+      },
+      {
+        id: "sample3",
+        make: "Mazda",
+        model: "CX-5",
+        year: "2023",
+        price: "3200000",
+        mileage: "8000",
+        engine: "2500cc",
+        transmission: "Automatic",
+        fuel: "Petrol",
+        colour: "Red",
+        features: "Bose Sound,LED Headlights,Lane Assist",
+        images: "https://images.unsplash.com/photo-1563720223490-9d24e5e6a954?q=80&w=1000&auto=format&fit=crop",
+        isFeatured: true
+      }
+    ];
+
+    // Debug toggle functionality
+    document.getElementById('toggleDebug').addEventListener('click', function() {
+      const debugOutput = document.getElementById('debugOutput');
+      if (debugOutput.style.display === 'block') {
+        debugOutput.style.display = 'none';
+        this.textContent = 'Show Debug Info';
+      } else {
+        debugOutput.style.display = 'block';
+        this.textContent = 'Hide Debug Info';
+      }
+    });
+
+    // Load sample cars button
+    document.getElementById('loadCarsDirect').addEventListener('click', function() {
+      updateDebugInfo('Loading sample cars data...');
+      renderCars(sampleCars);
+    });
+
+    // Check Netlify environment button
+    document.getElementById('checkNetlifyEnv').addEventListener('click', async function() {
+      updateDebugInfo('Checking Netlify environment...');
+      try {
+        const response = await fetch('/.netlify/functions/get-cars');
+        updateDebugInfo(`Response status: ${response.status} ${response.statusText}`);
+        
+        const headers = {};
+        for (const [key, value] of response.headers.entries()) {
+          headers[key] = value;
+        }
+        updateDebugInfo(`Response headers: ${JSON.stringify(headers, null, 2)}`);
+        
+        if (response.ok) {
+          updateDebugInfo('Netlify function is accessible.');
+        } else {
+          updateDebugInfo('Netlify function returned an error status.');
+        }
+      } catch (error) {
+        updateDebugInfo(`Failed to access Netlify function: ${error.message}`);
+      }
+    });
+
+    // Helper function to update debug info
+    function updateDebugInfo(message) {
+      const debugOutput = document.getElementById('debugOutput');
+      const timestamp = new Date().toLocaleTimeString();
+      debugOutput.textContent += `[${timestamp}] ${message}\n`;
+      debugOutput.scrollTop = debugOutput.scrollHeight; // Auto-scroll to bottom
+    }
+
+    // Function to render car cards
+    function renderCars(cars) {
       const featuredCarsContainer = document.getElementById('featuredCars');
+      document.getElementById('featuredCarsLoadingSpinner').style.display = 'none';
+      
+      if (!cars || cars.length === 0) {
+        updateDebugInfo('No cars to display, showing default content');
+        featuredCarsContainer.innerHTML = `
+          <div class="col-span-3 text-center py-12">
+            <p class="text-gray-500">No cars available at this time. Please check back later.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Clear the container
+      featuredCarsContainer.innerHTML = '';
+      
+      // Limit to 6 cars
+      const carsToShow = cars.slice(0, 6);
+      updateDebugInfo(`Rendering ${carsToShow.length} cars`);
+      
+      // Loop through cars and create HTML for each
+      carsToShow.forEach(car => {
+        // Get first image from comma-separated list, or use a placeholder
+        const firstImage = car.images ? car.images.split(',')[0] : 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b';
+        
+        // Create card element
+        const carCard = document.createElement('div');
+        carCard.className = 'car-card bg-white rounded-lg shadow-lg overflow-hidden';
+        
+        // Add border
+        carCard.classList.add('border-2', 'border-yellow-200');
+        carCard.innerHTML = `
+          <div class="bg-yellow-100 px-4 py-2">
+            <span class="text-yellow-800 font-bold text-xs">${car.isFeatured ? 'FEATURED' : 'CAR'}</span>
+          </div>
+          <img src="${firstImage}" alt="${car.make} ${car.model}" class="w-full h-48 object-cover">
+          <div class="p-6">
+            <h3 class="text-xl font-bold font-poppins mb-2">${car.make} ${car.model}</h3>
+            <p class="text-gray-600 mb-4">${car.colour || ''} ${car.features ? '• ' + car.features.split(',').slice(0, 2).join(' • ') : ''}</p>
+            <p class="text-2xl font-bold text-blue-600">KSh ${parseInt(car.price).toLocaleString()}</p>
+            <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+          </div>
+        `;
+        
+        // Add to the container
+        featuredCarsContainer.appendChild(carCard);
+      });
+    }
+
+    // Main function to load cars
+    async function loadCars() {
+      const featuredCarsContainer = document.getElementById('featuredCars');
+      const debugOutput = document.getElementById('debugOutput');
+      
+      // Clear debug output
+      debugOutput.textContent = '';
       
       try {
         // Show loading spinner
         document.getElementById('featuredCarsLoadingSpinner').style.display = 'flex';
+        updateDebugInfo('Fetching car data from Netlify function...');
         
-        // Fetch car data from Netlify function
-        const response = await fetch('/.netlify/functions/get-cars');
+        // Set up timeout to handle slow connections
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Request timeout after 10 seconds')), 10000);
+        });
+        
+        // Fetch car data from Netlify function with timeout
+        const fetchPromise = fetch('/.netlify/functions/get-cars');
+        
+        // Race the fetch against a timeout
+        const response = await Promise.race([fetchPromise, timeoutPromise]);
         
         if (!response.ok) {
-          throw new Error('Failed to fetch car data');
+          updateDebugInfo(`API Response not OK: Status ${response.status}`);
+          throw new Error(`Failed to fetch car data: ${response.status}`);
         }
         
-        const { cars } = await response.json();
+        const responseData = await response.json();
+        updateDebugInfo(`Response received with ${responseData.cars ? responseData.cars.length : 0} cars`);
         
-        // Hide loading spinner
-        document.getElementById('featuredCarsLoadingSpinner').style.display = 'none';
+        const cars = responseData.cars || [];
         
-        // Filter only featured cars and limit to 6
-        const featuredCars = cars ? cars.filter(car => car.isFeatured).slice(0, 6) : [];
+        // Log car count
+        updateDebugInfo(`Total cars returned: ${cars.length}`);
         
-        // If no featured cars found, show default content
-        if (featuredCars.length === 0) {
-          featuredCarsContainer.innerHTML = `
-            <div class="car-card bg-white rounded-lg shadow-lg overflow-hidden">
-              <img src="https://images.unsplash.com/photo-1541348263662-e068662d82af?q=80&w=1000&auto=format&fit=crop" alt="Toyota Corolla" class="w-full h-48 object-cover">
-              <div class="p-6">
-                <h3 class="text-xl font-bold font-poppins mb-2">Toyota Corolla</h3>
-                <p class="text-gray-600 mb-4">Reliable and fuel-efficient sedan.</p>
-                <p class="text-2xl font-bold text-blue-600">KSh 1,850,000</p>
-                <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-              </div>
-            </div>
-          `;
-          return;
-        }
-        
-        // Clear the container
-        featuredCarsContainer.innerHTML = '';
-        
-        // Loop through featured cars and create HTML for each
-        featuredCars.forEach(car => {
-          // Get first image from comma-separated list, or use a placeholder
-          const firstImage = car.images ? car.images.split(',')[0] : 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b';
-          
-          // Create card element
-          const carCard = document.createElement('div');
-          carCard.className = 'car-card bg-white rounded-lg shadow-lg overflow-hidden';
-          
-          // Add border if car is special
-          carCard.classList.add('border-2', 'border-yellow-200');
-          carCard.innerHTML = `
-            <div class="bg-yellow-100 px-4 py-2">
-              <span class="text-yellow-800 font-bold text-xs">FEATURED</span>
-            </div>
-            <img src="${firstImage}" alt="${car.make} ${car.model}" class="w-full h-48 object-cover">
-            <div class="p-6">
-              <h3 class="text-xl font-bold font-poppins mb-2">${car.make} ${car.model}</h3>
-              <p class="text-gray-600 mb-4">${car.colour || ''} ${car.features ? '• ' + car.features.split(',').slice(0, 2).join(' • ') : ''}</p>
-              <p class="text-2xl font-bold text-blue-600">KSh ${parseInt(car.price).toLocaleString()}</p>
-              <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
-            </div>
-          `;
-          
-          // Add to the container
-          featuredCarsContainer.appendChild(carCard);
+        // Log individual cars for debugging
+        cars.forEach((car, index) => {
+          updateDebugInfo(`Car ${index + 1}: ${car.make} ${car.model}, Featured: ${car.isFeatured}`);
         });
+        
+        // Show all cars temporarily for troubleshooting
+        renderCars(cars);
         
       } catch (error) {
         console.error('Error fetching featured cars:', error);
+        updateDebugInfo(`ERROR: ${error.message}`);
         document.getElementById('featuredCarsLoadingSpinner').style.display = 'none';
+        
+        // Show error message and fallback to sample cars
         featuredCarsContainer.innerHTML = `
-          <div class="col-span-3 text-center py-12">
-            <p class="text-gray-500">Unable to load featured cars. Showing our standard selection.</p>
+          <div class="col-span-3 text-center py-8">
+            <p class="text-gray-500 mb-4">Unable to load cars from the server. Showing sample cars instead.</p>
+            <button id="retryCarsLoad" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+              Retry
+            </button>
           </div>
         `;
-        // You could add your static featured cars here as a fallback
+        
+        // Add retry functionality
+        document.getElementById('retryCarsLoad').addEventListener('click', function() {
+          loadCars();
+        });
+        
+        // Load sample cars as fallback
+        setTimeout(() => {
+          updateDebugInfo('Loading sample cars as fallback...');
+          renderCars(sampleCars);
+        }, 1000);
       }
-    });
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', loadCars);
   </script>
 </body>
 </html>
