@@ -35,3 +35,7 @@
   to = "/index.html"
   status = 200
   force = false
+
+# Explicitly define functions for better discoverability
+[functions]
+  directory = "netlify/functions"

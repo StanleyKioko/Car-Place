@@ -22,6 +22,45 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 500px;
+    }
+    /* Toast message styles */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      border-radius: 4px;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: opacity 0.3s ease;
+    }
+    .toast-success {
+      background-color: #d1fae5;
+      color: #065f46;
+      border-left: 4px solid #10b981;
+    }
+    .toast-error {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border-left: 4px solid #ef4444;
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -105,8 +144,57 @@
     </div>
   </section>
 
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <h3 class="text-xl font-bold mb-4">Confirm Deletion</h3>
+      <p class="mb-6">Are you sure you want to delete <span id="carToDelete" class="font-semibold"></span>? This action cannot be undone.</p>
+      <div class="flex justify-end space-x-4">
+        <button id="cancelDelete" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</button>
+        <button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Message -->
+  <div id="toast" class="toast" style="display: none;"></div>
+
   <script>
+    // Global variables
+    let selectedCarId = null;
+    let selectedCarName = '';
+
     document.addEventListener('DOMContentLoaded', async function() {
+      // Load cars data
+      await loadCarsData();
+
+      // Set up event handlers for the delete modal
+      const deleteModal = document.getElementById('deleteModal');
+      const confirmDelete = document.getElementById('confirmDelete');
+      const cancelDelete = document.getElementById('cancelDelete');
+
+      // Close modal when clicking cancel
+      cancelDelete.addEventListener('click', function() {
+        deleteModal.style.display = 'none';
+      });
+
+      // Close modal when clicking outside of it
+      window.addEventListener('click', function(event) {
+        if (event.target === deleteModal) {
+          deleteModal.style.display = 'none';
+        }
+      });
+
+      // Handle delete confirmation
+      confirmDelete.addEventListener('click', async function() {
+        if (selectedCarId) {
+          await deleteCarById(selectedCarId);
+        }
+      });
+    });
+
+    // Function to load cars data
+    async function loadCarsData() {
       try {
         const response = await fetch('/.netlify/functions/get-cars');
         
@@ -123,84 +211,7 @@
           cars.filter(car => car.isFeatured).length;
         
         // Render recent cars (up to 5)
-        const recentCarsList = document.getElementById('recentCarsList');
-        
-        if (cars.length === 0) {
-          recentCarsList.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No cars found</td></tr>';
-          return;
-        }
-        
-        recentCarsList.innerHTML = '';
-        
-        // Sort cars by date added (newest first) and take the 5 most recent
-        const recentCars = [...cars]
-          .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
-          .slice(0, 5);
-        
-        recentCars.forEach(car => {
-          // Get first image from comma-separated list
-          const firstImage = car.images ? car.images.split(',')[0] : '../images/placeholder.jpg';
-          
-          const row = document.createElement('tr');
-          
-          // Create image cell
-          const imageCell = document.createElement('td');
-          imageCell.className = 'px-6 py-4 whitespace-nowrap';
-          const image = document.createElement('img');
-          image.src = firstImage;
-          image.alt = `${car.make} ${car.model}`;
-          image.className = 'h-16 w-24 object-cover rounded';
-          imageCell.appendChild(image);
-          
-          // Create car name cell
-          const nameCell = document.createElement('td');
-          nameCell.className = 'px-6 py-4 whitespace-nowrap';
-          nameCell.innerHTML = `<div class="text-sm font-medium text-gray-900">${car.make} ${car.model}</div>
-                               <div class="text-sm text-gray-500">${car.engine || ''} ${car.transmission || ''}</div>`;
-          
-          // Create year cell
-          const yearCell = document.createElement('td');
-          yearCell.className = 'px-6 py-4 whitespace-nowrap';
-          yearCell.textContent = car.year;
-          
-          // Create price cell
-          const priceCell = document.createElement('td');
-          priceCell.className = 'px-6 py-4 whitespace-nowrap';
-          priceCell.innerHTML = `<div class="text-sm font-medium text-gray-900">KSh ${parseInt(car.price).toLocaleString()}</div>`;
-          
-          // Create featured cell
-          const featuredCell = document.createElement('td');
-          featuredCell.className = 'px-6 py-4 whitespace-nowrap';
-          featuredCell.innerHTML = car.isFeatured 
-            ? '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Yes</span>' 
-            : '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">No</span>';
-          
-          // Create date cell
-          const dateCell = document.createElement('td');
-          dateCell.className = 'px-6 py-4 whitespace-nowrap';
-          const date = car.dateAdded ? new Date(car.dateAdded).toLocaleDateString() : 'N/A';
-          dateCell.textContent = date;
-          
-          // Create actions cell
-          const actionsCell = document.createElement('td');
-          actionsCell.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium';
-          actionsCell.innerHTML = `
-            <a href="./add-car.html?id=${car.id}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-            <a href="#" class="text-red-600 hover:text-red-900" data-id="${car.id}">Delete</a>
-          `;
-          
-          // Append all cells to the row
-          row.appendChild(imageCell);
-          row.appendChild(nameCell);
-          row.appendChild(yearCell);
-          row.appendChild(priceCell);
-          row.appendChild(featuredCell);
-          row.appendChild(dateCell);
-          row.appendChild(actionsCell);
-          
-          // Add row to the table
-          recentCarsList.appendChild(row);
-        });
+        renderRecentCars(cars);
       } catch (error) {
         console.error('Error fetching cars:', error);
         document.getElementById('totalCarsCount').textContent = '0';
@@ -208,7 +219,166 @@
         document.getElementById('recentCarsList').innerHTML = 
           '<tr><td colspan="7" class="px-6 py-4 text-center text-red-500">Failed to load cars. Please try again later.</td></tr>';
       }
-    });
+    }
+
+    // Function to render recent cars
+    function renderRecentCars(cars) {
+      const recentCarsList = document.getElementById('recentCarsList');
+        
+      if (cars.length === 0) {
+        recentCarsList.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No cars found</td></tr>';
+        return;
+      }
+        
+      recentCarsList.innerHTML = '';
+        
+      // Sort cars by date added (newest first) and take the 5 most recent
+      const recentCars = [...cars]
+        .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
+        .slice(0, 5);
+        
+      recentCars.forEach(car => {
+        // Get first image from comma-separated list
+        const firstImage = car.images ? car.images.split(',')[0] : '../images/placeholder.jpg';
+          
+        const row = document.createElement('tr');
+          
+        // Create image cell
+        const imageCell = document.createElement('td');
+        imageCell.className = 'px-6 py-4 whitespace-nowrap';
+        const image = document.createElement('img');
+        image.src = firstImage;
+        image.alt = `${car.make} ${car.model}`;
+        image.className = 'h-16 w-24 object-cover rounded';
+        imageCell.appendChild(image);
+          
+        // Create car name cell
+        const nameCell = document.createElement('td');
+        nameCell.className = 'px-6 py-4 whitespace-nowrap';
+        nameCell.innerHTML = `<div class="text-sm font-medium text-gray-900">${car.make} ${car.model}</div>
+                             <div class="text-sm text-gray-500">${car.engine || ''} ${car.transmission || ''}</div>`;
+          
+        // Create year cell
+        const yearCell = document.createElement('td');
+        yearCell.className = 'px-6 py-4 whitespace-nowrap';
+        yearCell.textContent = car.year;
+          
+        // Create price cell
+        const priceCell = document.createElement('td');
+        priceCell.className = 'px-6 py-4 whitespace-nowrap';
+        priceCell.innerHTML = `<div class="text-sm font-medium text-gray-900">KSh ${parseInt(car.price).toLocaleString()}</div>`;
+          
+        // Create featured cell
+        const featuredCell = document.createElement('td');
+        featuredCell.className = 'px-6 py-4 whitespace-nowrap';
+        featuredCell.innerHTML = car.isFeatured 
+          ? '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Yes</span>' 
+          : '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">No</span>';
+          
+        // Create date cell
+        const dateCell = document.createElement('td');
+        dateCell.className = 'px-6 py-4 whitespace-nowrap';
+        const date = car.dateAdded ? new Date(car.dateAdded).toLocaleDateString() : 'N/A';
+        dateCell.textContent = date;
+          
+        // Create actions cell
+        const actionsCell = document.createElement('td');
+        actionsCell.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium';
+
+        const editLink = document.createElement('a');
+        editLink.href = `./add-car.html?id=${car.id}`;
+        editLink.className = 'text-blue-600 hover:text-blue-900 mr-3';
+        editLink.textContent = 'Edit';
+
+        const deleteLink = document.createElement('a');
+        deleteLink.href = '#';
+        deleteLink.className = 'text-red-600 hover:text-red-900';
+        deleteLink.textContent = 'Delete';
+
+        // Add click handler for delete
+        deleteLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          selectedCarId = car.id;
+          selectedCarName = `${car.make} ${car.model}`;
+          
+          // Set car name in modal
+          document.getElementById('carToDelete').textContent = selectedCarName;
+          
+          // Show delete confirmation modal
+          document.getElementById('deleteModal').style.display = 'block';
+        });
+          
+        actionsCell.appendChild(editLink);
+        actionsCell.appendChild(deleteLink);
+          
+        // Append all cells to the row
+        row.appendChild(imageCell);
+        row.appendChild(nameCell);
+        row.appendChild(yearCell);
+        row.appendChild(priceCell);
+        row.appendChild(featuredCell);
+        row.appendChild(dateCell);
+        row.appendChild(actionsCell);
+          
+        // Add row to the table
+        recentCarsList.appendChild(row);
+      });
+    }
+
+    // Function to delete a car by ID
+    async function deleteCarById(carId) {
+      const confirmButton = document.getElementById('confirmDelete');
+      
+      try {
+        // Disable button and show loading state
+        confirmButton.disabled = true;
+        confirmButton.textContent = 'Deleting...';
+        
+        // Call the delete-car function
+        const response = await fetch('/.netlify/functions/delete-car', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: carId })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to delete car');
+        }
+        
+        // Hide modal
+        document.getElementById('deleteModal').style.display = 'none';
+        
+        // Show success message
+        showToast('Car deleted successfully', 'success');
+        
+        // Reload cars data
+        await loadCarsData();
+      } catch (error) {
+        console.error('Error deleting car:', error);
+        showToast(`Error: ${error.message}`, 'error');
+      } finally {
+        // Reset button
+        confirmButton.disabled = false;
+        confirmButton.textContent = 'Delete';
+      }
+    }
+
+    // Function to show toast message
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
+      toast.style.display = 'block';
+      
+      // Hide after 3 seconds
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
   </script>
 </body>
 </html>
