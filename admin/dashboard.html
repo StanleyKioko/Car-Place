@@ -75,6 +75,7 @@
         <a href="./add-car.html" class="text-gray-700 hover:text-blue-600">Add Car</a>
         <a href="./car-list.html" class="text-gray-700 hover:text-blue-600">Car List</a>
         <a href="../index.html" class="text-gray-700 hover:text-blue-600">Home Page</a>
+        <button id="logout-btn" class="text-gray-700 hover:text-red-600">Logout</button>
       </div>
     </nav>
   </header>
@@ -381,5 +382,14 @@
     }
   </script>
   <script src="../js/admin.js"></script>
+  <script>
+    // Ensure users are authenticated when accessing admin pages
+    document.addEventListener('DOMContentLoaded', function() {
+      // This will redirect to login page if not authenticated
+      if (!isLoggedIn()) {
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
 </body>
 </html>
