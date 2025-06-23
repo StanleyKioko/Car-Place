@@ -43,6 +43,14 @@ exports.handler = async (event, context) => {
     }
     
     // Parse the request body to get the car ID
+    if (!event.body) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: "Missing request body" })
+      };
+    }
+    
     const { id } = JSON.parse(event.body);
     
     if (!id) {

@@ -22,6 +22,46 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 500px;
+    }
+    /* Toast message styles */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      border-radius: 4px;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: opacity 0.3s ease;
+      display: none;
+    }
+    .toast-success {
+      background-color: #d1fae5;
+      color: #065f46;
+      border-left: 4px solid #10b981;
+    }
+    .toast-error {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border-left: 4px solid #ef4444;
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -84,37 +124,57 @@
     </div>
   </section>
 
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <h3 class="text-xl font-bold mb-4">Confirm Deletion</h3>
+      <p class="mb-6">Are you sure you want to delete <span id="carToDelete" class="font-semibold"></span>? This action cannot be undone.</p>
+      <div class="flex justify-end space-x-4">
+        <button id="cancelDelete" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</button>
+        <button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Message -->
+  <div id="toast" class="toast">
+    <span id="toastMessage"></span>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', async function() {
       const carsListTableBody = document.getElementById('carsList');
       const searchInput = document.getElementById('searchInput');
+      const deleteModal = document.getElementById('deleteModal');
+      const confirmDelete = document.getElementById('confirmDelete');
+      const cancelDelete = document.getElementById('cancelDelete');
+      const carToDelete = document.getElementById('carToDelete');
+      
+      let selectedCarId = null;
+      let selectedCarName = '';
       
       // Load cars data
       let allCars = [];
       
-      try {
-        const response = await fetch('/.netlify/functions/get-cars');
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch car data');
+      // Set up modal event handlers
+      cancelDelete.addEventListener('click', closeDeleteModal);
+      
+      // Close modal when clicking outside
+      window.addEventListener('click', function(event) {
+        if (event.target === deleteModal) {
+          closeDeleteModal();
         }
-        
-        const data = await response.json();
-        allCars = data.cars || [];
-        
-        // Display all cars initially
-        renderCars(allCars);
-        
-      } catch (error) {
-        console.error('Error fetching cars:', error);
-        carsListTableBody.innerHTML = `
-          <tr>
-            <td colspan="7" class="px-6 py-4 text-center text-red-500">
-              Failed to load cars. Please try again later.
-            </td>
-          </tr>
-        `;
-      }
+      });
+      
+      // Handle delete confirmation
+      confirmDelete.addEventListener('click', async function() {
+        if (selectedCarId) {
+          await deleteCarById(selectedCarId);
+        }
+      });
+      
+      // Load initial data
+      await loadCarsData();
       
       // Filter cars based on search input
       searchInput.addEventListener('input', function() {
@@ -131,6 +191,34 @@
         renderCars(filteredCars);
       });
       
+      // Main function to load cars data
+      async function loadCarsData() {
+        try {
+          const response = await fetch('/.netlify/functions/get-cars');
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch car data');
+          }
+          
+          const data = await response.json();
+          allCars = data.cars || [];
+          
+          // Display all cars initially
+          renderCars(allCars);
+          
+        } catch (error) {
+          console.error('Error fetching cars:', error);
+          carsListTableBody.innerHTML = `
+            <tr>
+              <td colspan="7" class="px-6 py-4 text-center text-red-500">
+                Failed to load cars. Please try again later.
+              </td>
+            </tr>
+          `;
+        }
+      }
+      
+      // Function to render cars table
       function renderCars(cars) {
         if (cars.length === 0) {
           carsListTableBody.innerHTML = `
@@ -145,7 +233,12 @@
         
         carsListTableBody.innerHTML = '';
         
-        cars.forEach(car => {
+        // Sort cars by date added (newest first)
+        const sortedCars = [...cars].sort((a, b) => 
+          new Date(b.dateAdded || 0) - new Date(a.dateAdded || 0)
+        );
+        
+        sortedCars.forEach(car => {
           // Get first image from comma-separated list
           const firstImage = car.images ? car.images.split(',')[0] : '../images/placeholder.jpg';
           
@@ -192,10 +285,29 @@
           // Create actions cell
           const actionsCell = document.createElement('td');
           actionsCell.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium';
-          actionsCell.innerHTML = `
-            <a href="./add-car.html?id=${car.id}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-            <a href="#" class="text-red-600 hover:text-red-900 delete-car" data-id="${car.id}">Delete</a>
-          `;
+          
+          const editLink = document.createElement('a');
+          editLink.href = `./add-car.html?id=${car.id}`;
+          editLink.className = 'text-blue-600 hover:text-blue-900 mr-3';
+          editLink.textContent = 'Edit';
+          
+          const deleteLink = document.createElement('a');
+          deleteLink.href = '#';
+          deleteLink.className = 'text-red-600 hover:text-red-900 delete-car';
+          deleteLink.dataset.id = car.id;
+          deleteLink.dataset.name = `${car.make} ${car.model}`;
+          deleteLink.textContent = 'Delete';
+          
+          // Add click handler for delete button
+          deleteLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            selectedCarId = this.dataset.id;
+            selectedCarName = this.dataset.name;
+            showDeleteModal(selectedCarName);
+          });
+          
+          actionsCell.appendChild(editLink);
+          actionsCell.appendChild(deleteLink);
           
           // Append all cells to the row
           row.appendChild(imageCell);
@@ -209,19 +321,72 @@
           // Add row to the table
           carsListTableBody.appendChild(row);
         });
-        
-        // Add event listeners for delete buttons
-        document.querySelectorAll('.delete-car').forEach(button => {
-          button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const carId = this.getAttribute('data-id');
-            if (confirm('Are you sure you want to delete this car?')) {
-              // In a real app, you would call a function to delete the car
-              // For now, just show an alert as we can't delete from forms yet
-              alert('Delete functionality requires additional server-side code. This is a UI demo.');
-            }
+      }
+      
+      // Function to show delete modal
+      function showDeleteModal(carName) {
+        carToDelete.textContent = carName;
+        deleteModal.style.display = 'block';
+      }
+      
+      // Function to close delete modal
+      function closeDeleteModal() {
+        deleteModal.style.display = 'none';
+      }
+      
+      // Function to delete a car
+      async function deleteCarById(carId) {
+        try {
+          // Show loading state
+          confirmDelete.textContent = 'Deleting...';
+          confirmDelete.disabled = true;
+          
+          const response = await fetch('/.netlify/functions/delete-car', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: carId })
           });
-        });
+          
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to delete car');
+          }
+          
+          // Close modal
+          closeDeleteModal();
+          
+          // Show success message
+          showToast('Car deleted successfully!', 'success');
+          
+          // Refresh the car list
+          await loadCarsData();
+          
+        } catch (error) {
+          console.error('Error deleting car:', error);
+          showToast(`Error: ${error.message}`, 'error');
+        } finally {
+          // Reset button
+          confirmDelete.textContent = 'Delete';
+          confirmDelete.disabled = false;
+        }
+      }
+      
+      // Show toast message
+      function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        
+        toastMessage.textContent = message;
+        toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
+        toast.style.display = 'block';
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+          toast.style.display = 'none';
+        }, 3000);
       }
     });
   </script>
