@@ -22,127 +22,97 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    /* Modal styles */
-    .modal {
+    .car-image {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+    }
+    #carDetailModal {
       display: none;
       position: fixed;
-      z-index: 100;
-      left: 0;
       top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 50;
+      overflow-y: auto;
     }
     .modal-content {
-      background-color: #fefefe;
-      margin: 15% auto;
+      background-color: white;
+      margin: 5% auto;
       padding: 20px;
+      width: 90%;
+      max-width: 800px;
       border-radius: 8px;
-      max-width: 500px;
-    }
-    /* Toast message styles */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 12px 24px;
-      border-radius: 4px;
-      z-index: 1000;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: opacity 0.3s ease;
-      display: none;
-    }
-    .toast-success {
-      background-color: #d1fae5;
-      color: #065f46;
-      border-left: 4px solid #10b981;
-    }
-    .toast-error {
-      background-color: #fee2e2;
-      color: #b91c1c;
-      border-left: 4px solid #ef4444;
-    }
-    /* Status badges */
-    .status-badge {
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      line-height: 1.25rem;
-    }
-    .status-available {
-      background-color: #d1fae5;
-      color: #065f46;
-    }
-    .status-sold {
-      background-color: #fecaca;
-      color: #b91c1c;
-    }
-    .car-sold {
-      opacity: 0.7;
     }
   </style>
+  <!-- Add the admin.js script to ensure authentication -->
+  <script src="../js/admin.js"></script>
 </head>
 <body class="bg-gray-100">
   <!-- Header -->
-  <header class="bg-white shadow sticky top-0 z-50">
+  <header class="bg-white shadow sticky top-0 z-40">
     <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
       <div class="text-2xl font-bold text-blue-600 font-poppins">
-     Admin
+        Blobe Stano Admin
       </div>
-      <div class="space-x-6">
-        <a href="./index.html" class="text-gray-700 hover:text-blue-600">Dashboard</a>
+      <div class="flex items-center space-x-6">
+        <div class="text-gray-700">
+          Welcome, <span id="username-display">Admin</span>
+        </div>
+        <a href="./dashboard.html" class="text-gray-700 hover:text-blue-600">Dashboard</a>
         <a href="./add-car.html" class="text-gray-700 hover:text-blue-600">Add Car</a>
         <a href="./car-list.html" class="text-blue-600 font-semibold">Car List</a>
-        <a href="../index.html" class="text-gray-700 hover:text-blue-600">Home</a>
+        <a href="../index.html" class="text-gray-700 hover:text-blue-600">Go Home</a>
+        <button id="logout-btn" class="text-red-600 hover:text-red-800">Logout</button>
       </div>
     </nav>
   </header>
 
   <!-- Page Header -->
   <section class="bg-blue-600 text-white py-8">
-    <div class="container mx-auto px-4 flex justify-between items-center">
-      <h1 class="text-3xl font-bold font-poppins">All Cars</h1>
-      <a href="./add-car.html" class="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 transition">Add New Car</a>
+    <div class="container mx-auto px-4">
+      <h1 class="text-3xl font-bold font-poppins">Car Inventory</h1>
+      <p class="mt-2">Manage all cars in your inventory.</p>
     </div>
   </section>
 
-  <!-- Car List Section -->
+  <!-- Car List Table -->
   <section class="container mx-auto px-4 py-8">
-    <div class="flex justify-between mb-6">
-      <div class="flex space-x-4">
-        <input type="text" id="searchInput" placeholder="Search cars..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <select id="statusFilter" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="all">All Cars</option>
-          <option value="available">Available</option>
-          <option value="sold">Sold</option>
-        </select>
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div class="p-6 bg-gray-50 border-b flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-gray-800">All Cars</h2>
+        <div class="flex space-x-2">
+          <select id="statusFilter" class="border rounded px-3 py-1 text-sm">
+            <option value="all">All Status</option>
+            <option value="available">Available</option>
+            <option value="sold">Sold</option>
+          </select>
+          <button id="refreshData" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded text-sm">
+            Refresh
+          </button>
+        </div>
       </div>
-      <a href="https://app.netlify.com/sites/blobecars/forms/car-submissions" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">View in Netlify</a>
-    </div>
-    
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="min-w-full table-auto">
           <thead class="bg-gray-50">
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Car</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Car Details</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Featured</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Added</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200" id="carsList">
+          <tbody id="carListTable" class="bg-white divide-y divide-gray-200">
             <tr>
-              <td colspan="8" class="px-6 py-4 text-center">
-                <div class="flex justify-center">
+              <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                <div class="flex justify-center mb-4">
                   <div class="spinner"></div>
                 </div>
-                <p class="mt-2 text-gray-500">Loading cars...</p>
+                <p>Loading car data...</p>
               </td>
             </tr>
           </tbody>
@@ -151,330 +121,518 @@
     </div>
   </section>
 
-  <!-- Status Change Modal -->
-  <div id="statusModal" class="modal">
+  <!-- Car Detail Modal -->
+  <div id="carDetailModal">
     <div class="modal-content">
-      <h3 class="text-xl font-bold mb-4" id="statusModalTitle">Mark as Sold</h3>
-      <p class="mb-6">Are you sure you want to mark <span id="carToUpdate" class="font-semibold"></span> as <span id="statusType" class="font-semibold"></span>?</p>
-      <div class="flex justify-end space-x-4">
-        <button id="cancelStatus" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</button>
-        <button id="confirmStatus" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Confirm</button>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800" id="modalCarTitle">Car Details</h2>
+        <button id="closeModal" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="bg-gray-100 p-4 rounded-lg mb-4">
+        <div class="flex flex-col md:flex-row">
+          <div class="md:w-1/2 mb-4 md:mb-0 md:pr-4">
+            <div class="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg overflow-hidden">
+              <img id="modalMainImage" src="" alt="Car image" class="w-full h-64 object-cover">
+            </div>
+            <div id="modalImageGallery" class="mt-2 flex space-x-2 overflow-x-auto">
+              <!-- Thumbnail images will be added here -->
+            </div>
+          </div>
+          <div class="md:w-1/2">
+            <table class="min-w-full">
+              <tbody class="divide-y divide-gray-200">
+                <tr>
+                  <td class="py-2 text-sm font-medium text-gray-600">Make:</td>
+                  <td class="py-2 pl-4 text-sm text-gray-900" id="modalMake"></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-sm font-medium text-gray-600">Model:</td>
+                  <td class="py-2 pl-4 text-sm text-gray-900" id="modalModel"></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-sm font-medium text-gray-600">Year:</td>
+                  <td class="py-2 pl-4 text-sm text-gray-900" id="modalYear"></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-sm font-medium text-gray-600">Price:</td>
+                  <td class="py-2 pl-4 text-sm text-gray-900" id="modalPrice"></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-sm font-medium text-gray-600">Engine:</td>
+                  <td class="py-2 pl-4 text-sm text-gray-900" id="modalEngine"></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-sm font-medium text-gray-600">Transmission:</td>
+                  <td class="py-2 pl-4 text-sm text-gray-900" id="modalTransmission"></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-sm font-medium text-gray-600">Mileage:</td>
+                  <td class="py-2 pl-4 text-sm text-gray-900" id="modalMileage"></td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-sm font-medium text-gray-600">Status:</td>
+                  <td class="py-2 pl-4" id="modalStatus"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-100 p-4 rounded-lg mb-4">
+        <h3 class="text-lg font-semibold mb-2">Additional Details</h3>
+        <table class="min-w-full">
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="py-2 text-sm font-medium text-gray-600">Color:</td>
+              <td class="py-2 pl-4 text-sm text-gray-900" id="modalColor"></td>
+            </tr>
+            <tr>
+              <td class="py-2 text-sm font-medium text-gray-600">Fuel Type:</td>
+              <td class="py-2 pl-4 text-sm text-gray-900" id="modalFuel"></td>
+            </tr>
+            <tr>
+              <td class="py-2 text-sm font-medium text-gray-600">Drive Type:</td>
+              <td class="py-2 pl-4 text-sm text-gray-900" id="modalDrive"></td>
+            </tr>
+            <tr>
+              <td class="py-2 text-sm font-medium text-gray-600">Registration:</td>
+              <td class="py-2 pl-4 text-sm text-gray-900" id="modalRegistration"></td>
+            </tr>
+            <tr>
+              <td class="py-2 text-sm font-medium text-gray-600">Featured:</td>
+              <td class="py-2 pl-4 text-sm text-gray-900" id="modalFeatured"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="bg-gray-100 p-4 rounded-lg">
+        <h3 class="text-lg font-semibold mb-2">Features</h3>
+        <div id="modalFeatures" class="flex flex-wrap gap-2">
+          <!-- Features will be added here -->
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end space-x-4">
+        <button id="modalToggleStatus" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
+          Mark as Sold
+        </button>
+        <button id="modalDelete" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded">
+          Delete Car
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Message -->
-  <div id="toast" class="toast">
-    <span id="toastMessage"></span>
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteConfirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Confirm Deletion</h3>
+      <p class="text-gray-500 mb-6">Are you sure you want to delete this car? This action cannot be undone.</p>
+      <div class="flex justify-end space-x-3">
+        <button id="cancelDelete" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-gray-800">
+          Cancel
+        </button>
+        <button id="confirmDelete" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
+          Delete
+        </button>
+      </div>
+    </div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async function() {
-      const carsListTableBody = document.getElementById('carsList');
-      const searchInput = document.getElementById('searchInput');
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM elements
+      const carListTable = document.getElementById('carListTable');
       const statusFilter = document.getElementById('statusFilter');
-      const statusModal = document.getElementById('statusModal');
-      const confirmStatus = document.getElementById('confirmStatus');
-      const cancelStatus = document.getElementById('cancelStatus');
-      const carToUpdate = document.getElementById('carToUpdate');
-      const statusModalTitle = document.getElementById('statusModalTitle');
-      const statusType = document.getElementById('statusType');
+      const refreshButton = document.getElementById('refreshData');
+      const modal = document.getElementById('carDetailModal');
+      const closeModal = document.getElementById('closeModal');
+      const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+      const cancelDelete = document.getElementById('cancelDelete');
+      const confirmDelete = document.getElementById('confirmDelete');
       
-      let selectedCarId = null;
-      let selectedCarName = '';
-      let selectedStatus = '';
-      let allCars = [];
+      // Current car data
+      let carsData = [];
+      let currentCarId = null;
       
-      // Set up modal event handlers
-      cancelStatus.addEventListener('click', closeStatusModal);
-      
-      // Close modal when clicking outside
-      window.addEventListener('click', function(event) {
-        if (event.target === statusModal) {
-          closeStatusModal();
-        }
-      });
-      
-      // Handle status change confirmation
-      confirmStatus.addEventListener('click', async function() {
-        if (selectedCarId && selectedStatus) {
-          await updateCarStatus(selectedCarId, selectedStatus);
-        }
-      });
-      
-      // Load initial data
-      await loadCarsData();
-      
-      // Apply filters when search input or status filter changes
-      searchInput.addEventListener('input', applyFilters);
-      statusFilter.addEventListener('change', applyFilters);
-      
-      // Function to apply all filters
-      function applyFilters() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const statusValue = statusFilter.value;
-        
-        const filteredCars = allCars.filter(car => {
-          // Search filter
-          const matchesSearch = 
-            car.make?.toLowerCase().includes(searchTerm) ||
-            car.model?.toLowerCase().includes(searchTerm) ||
-            car.year?.toString().includes(searchTerm);
-          
-          // Status filter
-          const matchesStatus = 
-            statusValue === 'all' || 
-            (statusValue === 'available' && !car.isSold) ||
-            (statusValue === 'sold' && car.isSold);
-          
-          return matchesSearch && matchesStatus;
-        });
-        
-        renderCars(filteredCars);
-      }
-      
-      // Main function to load cars data
-      async function loadCarsData() {
+      // Load cars data
+      async function loadCars() {
         try {
+          carListTable.innerHTML = `
+            <tr>
+              <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                <div class="flex justify-center mb-4">
+                  <div class="spinner"></div>
+                </div>
+                <p>Loading car data...</p>
+              </td>
+            </tr>
+          `;
+          
           const response = await fetch('/.netlify/functions/get-cars');
           
           if (!response.ok) {
-            throw new Error('Failed to fetch car data');
+            throw new Error('Failed to fetch cars');
           }
           
           const data = await response.json();
-          allCars = data.cars || [];
+          carsData = data.cars || [];
           
-          // Display all cars initially
-          renderCars(allCars);
-          
+          renderCarList();
         } catch (error) {
-          console.error('Error fetching cars:', error);
-          carsListTableBody.innerHTML = `
+          console.error('Error loading cars:', error);
+          carListTable.innerHTML = `
             <tr>
-              <td colspan="8" class="px-6 py-4 text-center text-red-500">
-                Failed to load cars. Please try again later.
+              <td colspan="6" class="px-6 py-4 text-center text-red-500">
+                Failed to load data. Please try refreshing the page.
               </td>
             </tr>
           `;
         }
       }
       
-      // Function to render cars table
-      function renderCars(cars) {
-        if (cars.length === 0) {
-          carsListTableBody.innerHTML = `
+      // Render car list based on filter
+      function renderCarList() {
+        if (!carsData || carsData.length === 0) {
+          carListTable.innerHTML = `
             <tr>
-              <td colspan="8" class="px-6 py-4 text-center text-gray-500">
-                No cars found matching your search.
+              <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                No cars found.
               </td>
             </tr>
           `;
           return;
         }
         
-        carsListTableBody.innerHTML = '';
+        const currentFilter = statusFilter.value;
         
-        // Sort cars by date added (newest first)
-        const sortedCars = [...cars].sort((a, b) => 
-          new Date(b.dateAdded || 0) - new Date(a.dateAdded || 0)
-        );
-        
-        sortedCars.forEach(car => {
-          // Get first image from comma-separated list
-          const firstImage = car.images ? car.images.split(',')[0] : '../images/placeholder.jpg';
-          
-          const row = document.createElement('tr');
-          // Add class if car is sold
-          if (car.isSold) {
-            row.classList.add('car-sold');
-          }
-          
-          // Create image cell
-          const imageCell = document.createElement('td');
-          imageCell.className = 'px-6 py-4 whitespace-nowrap';
-          const image = document.createElement('img');
-          image.src = firstImage;
-          image.alt = `${car.make} ${car.model}`;
-          image.className = 'h-16 w-24 object-cover rounded';
-          imageCell.appendChild(image);
-          
-          // Create car name cell
-          const nameCell = document.createElement('td');
-          nameCell.className = 'px-6 py-4 whitespace-nowrap';
-          nameCell.innerHTML = `<div class="text-sm font-medium text-gray-900">${car.make} ${car.model}</div>
-                               <div class="text-sm text-gray-500">${car.engine || ''} ${car.transmission || ''}</div>`;
-          
-          // Create year cell
-          const yearCell = document.createElement('td');
-          yearCell.className = 'px-6 py-4 whitespace-nowrap';
-          yearCell.textContent = car.year;
-          
-          // Create price cell
-          const priceCell = document.createElement('td');
-          priceCell.className = 'px-6 py-4 whitespace-nowrap';
-          priceCell.innerHTML = `<div class="text-sm font-medium text-gray-900">KSh ${parseInt(car.price).toLocaleString()}</div>`;
-          
-          // Create featured cell
-          const featuredCell = document.createElement('td');
-          featuredCell.className = 'px-6 py-4 whitespace-nowrap';
-          featuredCell.innerHTML = car.isFeatured 
-            ? '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Yes</span>' 
-            : '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">No</span>';
-          
-          // Create status cell
-          const statusCell = document.createElement('td');
-          statusCell.className = 'px-6 py-4 whitespace-nowrap';
-          statusCell.innerHTML = car.isSold 
-            ? '<span class="status-badge status-sold">Sold</span>' 
-            : '<span class="status-badge status-available">Available</span>';
-            
-          // Create date cell
-          const dateCell = document.createElement('td');
-          dateCell.className = 'px-6 py-4 whitespace-nowrap';
-          const date = car.dateAdded ? new Date(car.dateAdded).toLocaleDateString() : 'N/A';
-          dateCell.textContent = date;
-          
-          // Create actions cell
-          const actionsCell = document.createElement('td');
-          actionsCell.className = 'px-6 py-4 whitespace-nowrap text-right text-sm font-medium';
-          
-          const editLink = document.createElement('a');
-          editLink.href = `./add-car.html?id=${car.id}`;
-          editLink.className = 'text-blue-600 hover:text-blue-900 mr-3';
-          editLink.textContent = 'Edit';
-          
-          const statusLink = document.createElement('a');
-          statusLink.href = '#';
-          
-          // Set appropriate text and styling based on current status
-          if (car.isSold) {
-            statusLink.className = 'text-green-600 hover:text-green-900';
-            statusLink.textContent = 'Mark Available';
-            statusLink.dataset.status = 'available';
-          } else {
-            statusLink.className = 'text-red-600 hover:text-red-900';
-            statusLink.textContent = 'Mark Sold';
-            statusLink.dataset.status = 'sold';
-          }
-          
-          statusLink.dataset.id = car.id;
-          statusLink.dataset.name = `${car.make} ${car.model}`;
-          
-          // Add click handler for status change button
-          statusLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            selectedCarId = this.dataset.id;
-            selectedCarName = this.dataset.name;
-            selectedStatus = this.dataset.status;
-            
-            // Update modal content based on selected status
-            if (selectedStatus === 'sold') {
-              statusModalTitle.textContent = 'Mark as Sold';
-              statusType.textContent = 'sold';
-            } else {
-              statusModalTitle.textContent = 'Mark as Available';
-              statusType.textContent = 'available';
-            }
-            
-            carToUpdate.textContent = selectedCarName;
-            statusModal.style.display = 'block';
-          });
-          
-          actionsCell.appendChild(editLink);
-          actionsCell.appendChild(statusLink);
-          
-          // Append all cells to the row
-          row.appendChild(imageCell);
-          row.appendChild(nameCell);
-          row.appendChild(yearCell);
-          row.appendChild(priceCell);
-          row.appendChild(featuredCell);
-          row.appendChild(statusCell);
-          row.appendChild(dateCell);
-          row.appendChild(actionsCell);
-          
-          // Add row to the table
-          carsListTableBody.appendChild(row);
+        const filteredCars = carsData.filter(car => {
+          if (currentFilter === 'all') return true;
+          if (currentFilter === 'sold') return car.data.isSold === 'true';
+          if (currentFilter === 'available') return car.data.isSold !== 'true';
+          return true;
         });
-      }
-      
-      // Function to show status modal
-      function showStatusModal(carName, status) {
-        carToUpdate.textContent = carName;
-        statusType.textContent = status;
-        statusModal.style.display = 'block';
-      }
-      
-      // Function to close status modal
-      function closeStatusModal() {
-        statusModal.style.display = 'none';
-      }
-      
-      // Function to update car status
-      async function updateCarStatus(carId, status) {
-        try {
-          // Show loading state
-          confirmStatus.textContent = 'Updating...';
-          confirmStatus.disabled = true;
+        
+        if (filteredCars.length === 0) {
+          carListTable.innerHTML = `
+            <tr>
+              <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                No cars match the selected filter.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+        
+        carListTable.innerHTML = '';
+        
+        filteredCars.forEach(car => {
+          const row = document.createElement('tr');
+          row.className = 'hover:bg-gray-50';
           
-          const response = await fetch('/.netlify/functions/update-car-status', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 
-              id: carId, 
-              isSold: status === 'sold' 
-            })
+          const dateAdded = new Date(car.created_at).toLocaleDateString();
+          const isSold = car.data.isSold === 'true';
+          const firstImage = car.data.images ? car.data.images.split(',')[0] : '';
+          
+          row.innerHTML = `
+            <td class="px-6 py-4">
+              <img src="${firstImage || 'https://via.placeholder.com/80x60?text=No+Image'}" 
+                alt="${car.data.make} ${car.data.model}" 
+                class="car-image rounded">
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm font-medium text-gray-900">${car.data.make} ${car.data.model}</div>
+              <div class="text-xs text-gray-500">${car.data.year} · ${car.data.engine || 'N/A'}</div>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500">
+              KSh ${parseInt(car.data.price).toLocaleString()}
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                ${isSold ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}">
+                ${isSold ? 'Sold' : 'Available'}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500">${dateAdded}</td>
+            <td class="px-6 py-4 text-sm font-medium">
+              <button data-id="${car.id}" class="view-details text-blue-600 hover:text-blue-900 mr-3">
+                View Details
+              </button>
+              <button data-id="${car.id}" data-status="${isSold}" 
+                class="toggle-status text-indigo-600 hover:text-indigo-900 mr-3">
+                ${isSold ? 'Mark Available' : 'Mark Sold'}
+              </button>
+              <button data-id="${car.id}" class="delete-car text-red-600 hover:text-red-900">
+                Delete
+              </button>
+            </td>
+          `;
+          
+          carListTable.appendChild(row);
+        });
+        
+        // Add event listeners to view details buttons
+        document.querySelectorAll('.view-details').forEach(button => {
+          button.addEventListener('click', function() {
+            const carId = this.getAttribute('data-id');
+            showCarDetails(carId);
           });
-          
-          const data = await response.json();
-          
-          if (!response.ok) {
-            throw new Error(data.error || 'Failed to update car status');
-          }
-          
-          // Close modal
-          closeStatusModal();
-          
-          // Show success message
-          const statusText = status === 'sold' ? 'sold' : 'available';
-          showToast(`Car marked as ${statusText} successfully!`, 'success');
-          
-          // Update the local data
-          const updatedCarIndex = allCars.findIndex(car => car.id === carId);
-          if (updatedCarIndex !== -1) {
-            allCars[updatedCarIndex].isSold = status === 'sold';
-          }
-          
-          // Re-apply filters to update the display
-          applyFilters();
-          
-        } catch (error) {
-          console.error('Error updating car status:', error);
-          showToast(`Error: ${error.message}`, 'error');
-        } finally {
-          // Reset button
-          confirmStatus.textContent = 'Confirm';
-          confirmStatus.disabled = false;
+        });
+        
+        // Add event listeners to toggle status buttons
+        document.querySelectorAll('.toggle-status').forEach(button => {
+          button.addEventListener('click', function() {
+            const carId = this.getAttribute('data-id');
+            const currentStatus = this.getAttribute('data-status') === 'true';
+            toggleCarStatus(carId, !currentStatus);
+          });
+        });
+        
+        // Add event listeners to delete buttons
+        document.querySelectorAll('.delete-car').forEach(button => {
+          button.addEventListener('click', function() {
+            const carId = this.getAttribute('data-id');
+            showDeleteConfirmation(carId);
+          });
+        });
+        
+        // Check URL for car ID to display details
+        const urlParams = new URLSearchParams(window.location.search);
+        const carIdParam = urlParams.get('id');
+        if (carIdParam) {
+          showCarDetails(carIdParam);
+          // Clear URL parameter after showing details
+          window.history.replaceState({}, document.title, window.location.pathname);
         }
       }
       
-      // Show toast message
-      function showToast(message, type = 'success') {
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
+      // Show car details in modal
+      function showCarDetails(carId) {
+        const car = carsData.find(car => car.id === carId);
+        if (!car) return;
         
-        toastMessage.textContent = message;
-        toast.className = `toast ${type === 'success' ? 'toast-success' : 'toast-error'}`;
-        toast.style.display = 'block';
+        currentCarId = carId;
+        const isSold = car.data.isSold === 'true';
         
-        // Hide after 3 seconds
+        // Set modal title
+        document.getElementById('modalCarTitle').textContent = `${car.data.year} ${car.data.make} ${car.data.model}`;
+        
+        // Set car details
+        document.getElementById('modalMake').textContent = car.data.make || 'N/A';
+        document.getElementById('modalModel').textContent = car.data.model || 'N/A';
+        document.getElementById('modalYear').textContent = car.data.year || 'N/A';
+        document.getElementById('modalPrice').textContent = `KSh ${parseInt(car.data.price).toLocaleString()}` || 'N/A';
+        document.getElementById('modalEngine').textContent = car.data.engine || 'N/A';
+        document.getElementById('modalTransmission').textContent = car.data.transmission || 'N/A';
+        document.getElementById('modalMileage').textContent = `${parseInt(car.data.mileage).toLocaleString()} km` || 'N/A';
+        
+        // Set status with styling
+        const statusEl = document.getElementById('modalStatus');
+        statusEl.innerHTML = `
+          <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+            ${isSold ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}">
+            ${isSold ? 'Sold' : 'Available'}
+          </span>
+        `;
+        
+        // Set additional details
+        document.getElementById('modalColor').textContent = car.data.colour || 'N/A';
+        document.getElementById('modalFuel').textContent = car.data.fuel || 'N/A';
+        document.getElementById('modalDrive').textContent = car.data.drive || 'N/A';
+        document.getElementById('modalRegistration').textContent = car.data.registration || 'N/A';
+        document.getElementById('modalFeatured').textContent = car.data.isFeatured === 'true' ? 'Yes' : 'No';
+        
+        // Set features
+        const featuresEl = document.getElementById('modalFeatures');
+        featuresEl.innerHTML = '';
+        
+        if (car.data.features) {
+          const features = car.data.features.split(',').map(f => f.trim()).filter(f => f);
+          
+          if (features.length > 0) {
+            features.forEach(feature => {
+              const featureTag = document.createElement('span');
+              featureTag.className = 'bg-gray-200 px-2 py-1 rounded text-sm text-gray-700';
+              featureTag.textContent = feature;
+              featuresEl.appendChild(featureTag);
+            });
+          } else {
+            featuresEl.textContent = 'No features listed';
+          }
+        } else {
+          featuresEl.textContent = 'No features listed';
+        }
+        
+        // Set images
+        const mainImage = document.getElementById('modalMainImage');
+        const imageGallery = document.getElementById('modalImageGallery');
+        imageGallery.innerHTML = '';
+        
+        if (car.data.images) {
+          const images = car.data.images.split(',').filter(url => url.trim());
+          
+          if (images.length > 0) {
+            // Set main image
+            mainImage.src = images[0];
+            mainImage.alt = `${car.data.make} ${car.data.model}`;
+            
+            // Create thumbnails
+            images.forEach((imageUrl, index) => {
+              const thumbnail = document.createElement('img');
+              thumbnail.src = imageUrl;
+              thumbnail.alt = `${car.data.make} ${car.data.model} - Image ${index + 1}`;
+              thumbnail.className = 'h-16 w-20 object-cover rounded cursor-pointer';
+              thumbnail.onclick = function() {
+                mainImage.src = imageUrl;
+              };
+              imageGallery.appendChild(thumbnail);
+            });
+          } else {
+            mainImage.src = 'https://via.placeholder.com/800x600?text=No+Image+Available';
+            mainImage.alt = 'No Image Available';
+          }
+        } else {
+          mainImage.src = 'https://via.placeholder.com/800x600?text=No+Image+Available';
+          mainImage.alt = 'No Image Available';
+        }
+        
+        // Set action buttons
+        const toggleStatusBtn = document.getElementById('modalToggleStatus');
+        toggleStatusBtn.textContent = isSold ? 'Mark as Available' : 'Mark as Sold';
+        toggleStatusBtn.onclick = function() {
+          toggleCarStatus(carId, !isSold);
+        };
+        
+        const deleteBtn = document.getElementById('modalDelete');
+        deleteBtn.onclick = function() {
+          modal.style.display = 'none';
+          showDeleteConfirmation(carId);
+        };
+        
+        // Show the modal
+        modal.style.display = 'block';
+      }
+      
+      // Toggle car status (sold/available)
+      async function toggleCarStatus(carId, newStatus) {
+        try {
+          const response = await fetch('/.netlify/functions/update-car-status', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: carId,
+              isSold: newStatus
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to update car status');
+          }
+          
+          // Update local data
+          const carIndex = carsData.findIndex(car => car.id === carId);
+          if (carIndex !== -1) {
+            carsData[carIndex].data.isSold = newStatus.toString();
+          }
+          
+          // Hide modal if open
+          modal.style.display = 'none';
+          
+          // Re-render car list
+          renderCarList();
+          
+          // Show success message
+          showNotification(`Car marked as ${newStatus ? 'sold' : 'available'}`, 'success');
+        } catch (error) {
+          console.error('Error updating car status:', error);
+          showNotification('Failed to update car status', 'error');
+        }
+      }
+      
+      // Show delete confirmation modal
+      function showDeleteConfirmation(carId) {
+        currentCarId = carId;
+        deleteConfirmModal.classList.remove('hidden');
+      }
+      
+      // Delete a car
+      async function deleteCar(carId) {
+        try {
+          const response = await fetch('/.netlify/functions/delete-car', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: carId })
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to delete car');
+          }
+          
+          // Remove from local data
+          carsData = carsData.filter(car => car.id !== carId);
+          
+          // Hide modals
+          deleteConfirmModal.classList.add('hidden');
+          modal.style.display = 'none';
+          
+          // Re-render car list
+          renderCarList();
+          
+          // Show success message
+          showNotification('Car deleted successfully', 'success');
+        } catch (error) {
+          console.error('Error deleting car:', error);
+          showNotification('Failed to delete car', 'error');
+        }
+      }
+      
+      // Show notification
+      function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 px-6 py-3 rounded shadow-lg z-50 ${
+          type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
         setTimeout(() => {
-          toast.style.display = 'none';
+          notification.remove();
         }, 3000);
       }
+      
+      // Event listeners
+      statusFilter.addEventListener('change', renderCarList);
+      refreshButton.addEventListener('click', loadCars);
+      
+      closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+      });
+      
+      window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+      
+      cancelDelete.addEventListener('click', function() {
+        deleteConfirmModal.classList.add('hidden');
+      });
+      
+      confirmDelete.addEventListener('click', function() {
+        if (currentCarId) {
+          deleteCar(currentCarId);
+        }
+      });
+      
+      // Initial load
+      loadCars();
     });
   </script>
 </body>
