@@ -62,25 +62,6 @@
       color: #b91c1c;
       border-left: 4px solid #ef4444;
     }
-    /* Status badges */
-    .status-badge {
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      line-height: 1.25rem;
-    }
-    .status-available {
-      background-color: #d1fae5;
-      color: #065f46;
-    }
-    .status-sold {
-      background-color: #fecaca;
-      color: #b91c1c;
-    }
-    .car-sold {
-      opacity: 0.7;
-    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -110,14 +91,7 @@
   <!-- Car List Section -->
   <section class="container mx-auto px-4 py-8">
     <div class="flex justify-between mb-6">
-      <div class="flex space-x-4">
-        <input type="text" id="searchInput" placeholder="Search cars..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <select id="statusFilter" class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value="all">All Cars</option>
-          <option value="available">Available</option>
-          <option value="sold">Sold</option>
-        </select>
-      </div>
+      <input type="text" id="searchInput" placeholder="Search cars..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
       <a href="https://app.netlify.com/sites/blobecars/forms/car-submissions" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">View in Netlify</a>
     </div>
     
@@ -131,14 +105,13 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Featured</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Added</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200" id="carsList">
             <tr>
-              <td colspan="8" class="px-6 py-4 text-center">
+              <td colspan="7" class="px-6 py-4 text-center">
                 <div class="flex justify-center">
                   <div class="spinner"></div>
                 </div>
@@ -151,14 +124,14 @@
     </div>
   </section>
 
-  <!-- Status Change Modal -->
-  <div id="statusModal" class="modal">
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal">
     <div class="modal-content">
-      <h3 class="text-xl font-bold mb-4" id="statusModalTitle">Mark as Sold</h3>
-      <p class="mb-6">Are you sure you want to mark <span id="carToUpdate" class="font-semibold"></span> as <span id="statusType" class="font-semibold"></span>?</p>
+      <h3 class="text-xl font-bold mb-4">Confirm Deletion</h3>
+      <p class="mb-6">Are you sure you want to delete <span id="carToDelete" class="font-semibold"></span>? This action cannot be undone.</p>
       <div class="flex justify-end space-x-4">
-        <button id="cancelStatus" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</button>
-        <button id="confirmStatus" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Confirm</button>
+        <button id="cancelDelete" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</button>
+        <button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
       </div>
     </div>
   </div>
@@ -172,66 +145,51 @@
     document.addEventListener('DOMContentLoaded', async function() {
       const carsListTableBody = document.getElementById('carsList');
       const searchInput = document.getElementById('searchInput');
-      const statusFilter = document.getElementById('statusFilter');
-      const statusModal = document.getElementById('statusModal');
-      const confirmStatus = document.getElementById('confirmStatus');
-      const cancelStatus = document.getElementById('cancelStatus');
-      const carToUpdate = document.getElementById('carToUpdate');
-      const statusModalTitle = document.getElementById('statusModalTitle');
-      const statusType = document.getElementById('statusType');
+      const deleteModal = document.getElementById('deleteModal');
+      const confirmDelete = document.getElementById('confirmDelete');
+      const cancelDelete = document.getElementById('cancelDelete');
+      const carToDelete = document.getElementById('carToDelete');
       
       let selectedCarId = null;
       let selectedCarName = '';
-      let selectedStatus = '';
+      
+      // Load cars data
       let allCars = [];
       
       // Set up modal event handlers
-      cancelStatus.addEventListener('click', closeStatusModal);
+      cancelDelete.addEventListener('click', closeDeleteModal);
       
       // Close modal when clicking outside
       window.addEventListener('click', function(event) {
-        if (event.target === statusModal) {
-          closeStatusModal();
+        if (event.target === deleteModal) {
+          closeDeleteModal();
         }
       });
       
-      // Handle status change confirmation
-      confirmStatus.addEventListener('click', async function() {
-        if (selectedCarId && selectedStatus) {
-          await updateCarStatus(selectedCarId, selectedStatus);
+      // Handle delete confirmation
+      confirmDelete.addEventListener('click', async function() {
+        if (selectedCarId) {
+          await deleteCarById(selectedCarId);
         }
       });
       
       // Load initial data
       await loadCarsData();
       
-      // Apply filters when search input or status filter changes
-      searchInput.addEventListener('input', applyFilters);
-      statusFilter.addEventListener('change', applyFilters);
-      
-      // Function to apply all filters
-      function applyFilters() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const statusValue = statusFilter.value;
+      // Filter cars based on search input
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
         
         const filteredCars = allCars.filter(car => {
-          // Search filter
-          const matchesSearch = 
+          return (
             car.make?.toLowerCase().includes(searchTerm) ||
             car.model?.toLowerCase().includes(searchTerm) ||
-            car.year?.toString().includes(searchTerm);
-          
-          // Status filter
-          const matchesStatus = 
-            statusValue === 'all' || 
-            (statusValue === 'available' && !car.isSold) ||
-            (statusValue === 'sold' && car.isSold);
-          
-          return matchesSearch && matchesStatus;
+            car.year?.toString().includes(searchTerm)
+          );
         });
         
         renderCars(filteredCars);
-      }
+      });
       
       // Main function to load cars data
       async function loadCarsData() {
@@ -252,7 +210,7 @@
           console.error('Error fetching cars:', error);
           carsListTableBody.innerHTML = `
             <tr>
-              <td colspan="8" class="px-6 py-4 text-center text-red-500">
+              <td colspan="7" class="px-6 py-4 text-center text-red-500">
                 Failed to load cars. Please try again later.
               </td>
             </tr>
@@ -265,7 +223,7 @@
         if (cars.length === 0) {
           carsListTableBody.innerHTML = `
             <tr>
-              <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+              <td colspan="7" class="px-6 py-4 text-center text-gray-500">
                 No cars found matching your search.
               </td>
             </tr>
@@ -285,10 +243,6 @@
           const firstImage = car.images ? car.images.split(',')[0] : '../images/placeholder.jpg';
           
           const row = document.createElement('tr');
-          // Add class if car is sold
-          if (car.isSold) {
-            row.classList.add('car-sold');
-          }
           
           // Create image cell
           const imageCell = document.createElement('td');
@@ -322,13 +276,6 @@
             ? '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Yes</span>' 
             : '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">No</span>';
           
-          // Create status cell
-          const statusCell = document.createElement('td');
-          statusCell.className = 'px-6 py-4 whitespace-nowrap';
-          statusCell.innerHTML = car.isSold 
-            ? '<span class="status-badge status-sold">Sold</span>' 
-            : '<span class="status-badge status-available">Available</span>';
-            
           // Create date cell
           const dateCell = document.createElement('td');
           dateCell.className = 'px-6 py-4 whitespace-nowrap';
@@ -344,45 +291,23 @@
           editLink.className = 'text-blue-600 hover:text-blue-900 mr-3';
           editLink.textContent = 'Edit';
           
-          const statusLink = document.createElement('a');
-          statusLink.href = '#';
+          const deleteLink = document.createElement('a');
+          deleteLink.href = '#';
+          deleteLink.className = 'text-red-600 hover:text-red-900 delete-car';
+          deleteLink.dataset.id = car.id;
+          deleteLink.dataset.name = `${car.make} ${car.model}`;
+          deleteLink.textContent = 'Delete';
           
-          // Set appropriate text and styling based on current status
-          if (car.isSold) {
-            statusLink.className = 'text-green-600 hover:text-green-900';
-            statusLink.textContent = 'Mark Available';
-            statusLink.dataset.status = 'available';
-          } else {
-            statusLink.className = 'text-red-600 hover:text-red-900';
-            statusLink.textContent = 'Mark Sold';
-            statusLink.dataset.status = 'sold';
-          }
-          
-          statusLink.dataset.id = car.id;
-          statusLink.dataset.name = `${car.make} ${car.model}`;
-          
-          // Add click handler for status change button
-          statusLink.addEventListener('click', function(e) {
+          // Add click handler for delete button
+          deleteLink.addEventListener('click', function(e) {
             e.preventDefault();
             selectedCarId = this.dataset.id;
             selectedCarName = this.dataset.name;
-            selectedStatus = this.dataset.status;
-            
-            // Update modal content based on selected status
-            if (selectedStatus === 'sold') {
-              statusModalTitle.textContent = 'Mark as Sold';
-              statusType.textContent = 'sold';
-            } else {
-              statusModalTitle.textContent = 'Mark as Available';
-              statusType.textContent = 'available';
-            }
-            
-            carToUpdate.textContent = selectedCarName;
-            statusModal.style.display = 'block';
+            showDeleteModal(selectedCarName);
           });
           
           actionsCell.appendChild(editLink);
-          actionsCell.appendChild(statusLink);
+          actionsCell.appendChild(deleteLink);
           
           // Append all cells to the row
           row.appendChild(imageCell);
@@ -390,7 +315,6 @@
           row.appendChild(yearCell);
           row.appendChild(priceCell);
           row.appendChild(featuredCell);
-          row.appendChild(statusCell);
           row.appendChild(dateCell);
           row.appendChild(actionsCell);
           
@@ -399,65 +323,54 @@
         });
       }
       
-      // Function to show status modal
-      function showStatusModal(carName, status) {
-        carToUpdate.textContent = carName;
-        statusType.textContent = status;
-        statusModal.style.display = 'block';
+      // Function to show delete modal
+      function showDeleteModal(carName) {
+        carToDelete.textContent = carName;
+        deleteModal.style.display = 'block';
       }
       
-      // Function to close status modal
-      function closeStatusModal() {
-        statusModal.style.display = 'none';
+      // Function to close delete modal
+      function closeDeleteModal() {
+        deleteModal.style.display = 'none';
       }
       
-      // Function to update car status
-      async function updateCarStatus(carId, status) {
+      // Function to delete a car
+      async function deleteCarById(carId) {
         try {
           // Show loading state
-          confirmStatus.textContent = 'Updating...';
-          confirmStatus.disabled = true;
+          confirmDelete.textContent = 'Deleting...';
+          confirmDelete.disabled = true;
           
-          const response = await fetch('/.netlify/functions/update-car-status', {
+          const response = await fetch('/.netlify/functions/delete-car', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 
-              id: carId, 
-              isSold: status === 'sold' 
-            })
+            body: JSON.stringify({ id: carId })
           });
           
           const data = await response.json();
           
           if (!response.ok) {
-            throw new Error(data.error || 'Failed to update car status');
+            throw new Error(data.error || 'Failed to delete car');
           }
           
           // Close modal
-          closeStatusModal();
+          closeDeleteModal();
           
           // Show success message
-          const statusText = status === 'sold' ? 'sold' : 'available';
-          showToast(`Car marked as ${statusText} successfully!`, 'success');
+          showToast('Car deleted successfully!', 'success');
           
-          // Update the local data
-          const updatedCarIndex = allCars.findIndex(car => car.id === carId);
-          if (updatedCarIndex !== -1) {
-            allCars[updatedCarIndex].isSold = status === 'sold';
-          }
-          
-          // Re-apply filters to update the display
-          applyFilters();
+          // Refresh the car list
+          await loadCarsData();
           
         } catch (error) {
-          console.error('Error updating car status:', error);
+          console.error('Error deleting car:', error);
           showToast(`Error: ${error.message}`, 'error');
         } finally {
           // Reset button
-          confirmStatus.textContent = 'Confirm';
-          confirmStatus.disabled = false;
+          confirmDelete.textContent = 'Delete';
+          confirmDelete.disabled = false;
         }
       }
       
