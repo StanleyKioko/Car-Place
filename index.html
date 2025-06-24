@@ -40,111 +40,208 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
-    /* Image carousel styles */
-    .carousel-container {
-      position: relative;
-      height: 192px; /* Adjust height as needed */
-      overflow: hidden;
-    }
-    .carousel-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      object-fit: cover;
-    }
-    .carousel-image.active {
-      opacity: 1;
-    }
-    .carousel-dots {
-      position: absolute;
-      bottom: 10px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-    }
-    .carousel-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: rgba(255, 255, 255, 0.5);
-      cursor: pointer;
-      border: 1px solid rgba(0, 0, 0, 0.2);
-    }
-    .carousel-dot.active {
-      background-color: white;
-    }
-    .carousel-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 30px;
-      height: 30px;
-      background-color: rgba(255, 255, 255, 0.7);
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      z-index: 1;
-      opacity: 0;
-      transition: opacity 0.3s;
-      font-size: 14px;
-      color: #444;
-    }
-    .carousel-container:hover .carousel-arrow {
-      opacity: 1;
-    }
-    .carousel-prev {
-      left: 10px;
-    }
-    .carousel-next {
-      right: 10px;
-    }
   </style>
 </head>
-<!-- Rest of your HTML remains unchanged -->
+<body class="bg-gray-100">
+  <!-- Header -->
+  <header class="bg-white shadow sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="text-2xl font-bold text-blue-600 font-poppins">
+        Blobe Cars
+      </div>
+      <div class="space-x-6">
+        <a href="index.html" class="text-blue-600 font-semibold">Home</a>
+        <a href="cars.html" class="text-gray-700 hover:text-blue-600">Cars</a>
+        <a href="contact.html" class="text-gray-700 hover:text-blue-600">Contact</a>
+        <a href="about.html" class="text-gray-700 hover:text-blue-600">About</a>
+        <a href="./admin" class="text-gray-700 hover:text-blue-600">
+        <i class="fas fa-user-shield"></i>
+        </a>
+      </div>
+    </nav>
+  </header>
 
-<!-- Replace the car rendering part in your script with this: -->
-<script>
-  document.addEventListener('DOMContentLoaded', async function() {
-    // Your existing code...
+  <!-- Hero Section -->
+  <section class="hero-bg h-96 flex items-center justify-center text-white">
+    <div class="text-center">
+      <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4">Find Your Dream Car in Kenya</h1>
+      <p class="text-lg md:text-xl mb-6">Explore our wide range of quality vehicles at unbeatable prices.</p>
+      <a href="cars.html" class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition">Browse Cars</a>
+    </div>
+  </section>
 
-    // Function to render featured cars
-    function renderFeaturedCars(cars) {
+  <!-- Featured Cars Preview -->
+  <section class="container mx-auto px-4 py-12">
+    <h2 class="text-3xl font-bold text-center font-poppins mb-8">Featured Cars</h2>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="featuredCars">
+      <div id="featuredCarsLoadingSpinner" class="col-span-3">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us -->
+  <section class="bg-gray-50 py-16">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center font-poppins mb-12">Why Choose Us</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Quality Selection -->
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Quality Selection</h3>
+          <p class="text-gray-600">All our vehicles undergo rigorous quality checks before being listed.</p>
+        </div>
+        
+        <!-- Competitive Pricing -->
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Competitive Pricing</h3>
+          <p class="text-gray-600">We offer the best market rates with flexible payment options.</p>
+        </div>
+        
+        <!-- After-sales Support -->
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">After-sales Support</h3>
+          <p class="text-gray-600">Excellent customer service and maintenance support after purchase.</p>
+        </div>
+        
+        <!-- Trade-in Options -->
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Trade-in Options</h3>
+          <p class="text-gray-600">Upgrade your current vehicle with our flexible trade-in programs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- About -->
+        <div>
+          <h3 class="text-xl font-bold mb-4">About Blobe Cars</h3>
+          <p class="text-gray-300">We are a premier car dealership in Kenya, specializing in quality vehicles at affordable prices. Our commitment is to provide exceptional service and value to our clients.</p>
+        </div>
+        
+        <!-- Quick Links -->
+        <div>
+          <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+          <ul class="space-y-2">
+            <li><a href="index.html" class="text-gray-300 hover:text-white">Home</a></li>
+            <li><a href="cars.html" class="text-gray-300 hover:text-white">Cars</a></li>
+            <li><a href="contact.html" class="text-gray-300 hover:text-white">Contact</a></li>
+            <li><a href="about.html" class="text-gray-300 hover:text-white">About</a></li>
+          </ul>
+        </div>
+        
+        <!-- Contact Info -->
+        <div>
+          <h3 class="text-xl font-bold mb-4">Contact Information</h3>
+          <p class="text-gray-300">Nairobi, Kenya</p>
+          <p class="text-gray-300">Phone: +254 708967800</p>
+          <p class="text-gray-300">Email: mwangestanley02@gmail.com</p>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 mt-8 pt-4 text-center">
+        <p>&copy; 2025 Blobe Cars. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Sample car data to use when netlify functions fail
+    const sampleCars = [
+      {
+        id: "sample1",
+        make: "Toyota",
+        model: "Corolla",
+        year: "2023",
+        price: "1850000",
+        mileage: "5000",
+        engine: "1800cc",
+        transmission: "Automatic",
+        fuel: "Petrol",
+        colour: "White",
+        features: "Alloy Wheels,Bluetooth,Backup Camera",
+        images: "https://images.unsplash.com/photo-1541348263662-e068662d82af?q=80&w=1000&auto=format&fit=crop",
+        isFeatured: true
+      },
+      {
+        id: "sample2",
+        make: "Honda",
+        model: "CR-V",
+        year: "2022",
+        price: "3500000",
+        mileage: "15000",
+        engine: "2400cc",
+        transmission: "Automatic",
+        fuel: "Petrol",
+        colour: "Silver",
+        features: "Leather Seats,Sunroof,Navigation",
+        images: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?q=80&w=1000&auto=format&fit=crop",
+        isFeatured: true
+      },
+      {
+        id: "sample3",
+        make: "Mazda",
+        model: "CX-5",
+        year: "2023",
+        price: "3200000",
+        mileage: "8000",
+        engine: "2500cc",
+        transmission: "Automatic",
+        fuel: "Petrol",
+        colour: "Red",
+        features: "Bose Sound,LED Headlights,Lane Assist",
+        images: "https://images.unsplash.com/photo-1563720223490-9d24e5e6a954?q=80&w=1000&auto=format&fit=crop",
+        isFeatured: true
+      }
+    ];
+
+    // Function to render car cards
+    function renderCars(cars) {
       const featuredCarsContainer = document.getElementById('featuredCars');
       document.getElementById('featuredCarsLoadingSpinner').style.display = 'none';
       
-      // Check if there are no featured cars
       if (!cars || cars.length === 0) {
         featuredCarsContainer.innerHTML = `
-          <div class="col-span-3 text-center text-gray-500 py-8">
-            No featured cars available at this time. Please check back later.
+          <div class="col-span-3 text-center py-12">
+            <p class="text-gray-500">No cars available at this time. Please check back later.</p>
           </div>
         `;
         return;
       }
       
+      // Clear the container
       featuredCarsContainer.innerHTML = '';
       
-      // Filter cars to show only featured ones (if possible), or just the first 3
-      const carsToShow = cars.filter(car => car.isFeatured).slice(0, 3);
-      
-      // If no featured cars, show the first 3 anyway
-      if (carsToShow.length === 0) {
-        carsToShow = cars.slice(0, 3);
-      }
+      // Limit to 6 cars
+      const carsToShow = cars.slice(0, 6);
       
       // Loop through cars and create HTML for each
       carsToShow.forEach(car => {
-        // Get all images from comma-separated list
-        const imagesList = car.images ? car.images.split(',') : ['https://images.unsplash.com/photo-1544636331-e26879cd4d9b'];
+        // Get first image from comma-separated list, or use a placeholder
+        const firstImage = car.images ? car.images.split(',')[0] : 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b';
         
         // Create card element
         const carCard = document.createElement('div');
@@ -152,120 +249,81 @@
         
         // Add border
         carCard.classList.add('border-2', 'border-yellow-200');
-        
-        // Create header banner
-        const headerBanner = document.createElement('div');
-        headerBanner.className = 'bg-yellow-100 px-4 py-2';
-        headerBanner.innerHTML = `<span class="text-yellow-800 font-bold text-xs">${car.isFeatured ? 'FEATURED' : 'CAR'}</span>`;
-        carCard.appendChild(headerBanner);
-        
-        // Create carousel container
-        const carouselContainer = document.createElement('div');
-        carouselContainer.className = 'carousel-container';
-        carouselContainer.dataset.carId = car.id;
-        
-        // Create images
-        imagesList.forEach((imgSrc, index) => {
-          const image = document.createElement('img');
-          image.src = imgSrc;
-          image.alt = `${car.make} ${car.model} - Image ${index + 1}`;
-          image.className = `carousel-image ${index === 0 ? 'active' : ''}`;
-          image.dataset.index = index;
-          carouselContainer.appendChild(image);
-        });
-        
-        // Add navigation elements if there are multiple images
-        if (imagesList.length > 1) {
-          // Add navigation dots
-          const dotsContainer = document.createElement('div');
-          dotsContainer.className = 'carousel-dots';
-          
-          imagesList.forEach((_, index) => {
-            const dot = document.createElement('div');
-            dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
-            dot.dataset.index = index;
-            dot.dataset.carId = car.id;
-            dot.addEventListener('click', function() {
-              changeCarouselImage(car.id, parseInt(this.dataset.index));
-            });
-            dotsContainer.appendChild(dot);
-          });
-          
-          // Add navigation arrows
-          const prevArrow = document.createElement('div');
-          prevArrow.className = 'carousel-arrow carousel-prev';
-          prevArrow.innerHTML = '&#10094;';
-          prevArrow.dataset.carId = car.id;
-          prevArrow.addEventListener('click', function() {
-            navigateCarousel(car.id, -1, imagesList.length);
-          });
-          
-          const nextArrow = document.createElement('div');
-          nextArrow.className = 'carousel-arrow carousel-next';
-          nextArrow.innerHTML = '&#10095;';
-          nextArrow.dataset.carId = car.id;
-          nextArrow.addEventListener('click', function() {
-            navigateCarousel(car.id, 1, imagesList.length);
-          });
-          
-          carouselContainer.appendChild(dotsContainer);
-          carouselContainer.appendChild(prevArrow);
-          carouselContainer.appendChild(nextArrow);
-        }
-        
-        carCard.appendChild(carouselContainer);
-        
-        // Add car details
-        const detailsDiv = document.createElement('div');
-        detailsDiv.className = 'p-6';
-        detailsDiv.innerHTML = `
-          <h3 class="text-xl font-bold font-poppins mb-2">${car.make} ${car.model}</h3>
-          <p class="text-gray-600 mb-4">${car.colour || ''} ${car.features ? '• ' + car.features.split(',').slice(0, 2).join(' • ') : ''}</p>
-          <p class="text-2xl font-bold text-blue-600">KSh ${parseInt(car.price).toLocaleString()}</p>
-          <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+        carCard.innerHTML = `
+          <div class="bg-yellow-100 px-4 py-2">
+            <span class="text-yellow-800 font-bold text-xs">${car.isFeatured ? 'FEATURED' : 'CAR'}</span>
+          </div>
+          <img src="${firstImage}" alt="${car.make} ${car.model}" class="w-full h-48 object-cover">
+          <div class="p-6">
+            <h3 class="text-xl font-bold font-poppins mb-2">${car.make} ${car.model}</h3>
+            <p class="text-gray-600 mb-4">${car.colour || ''} ${car.features ? '• ' + car.features.split(',').slice(0, 2).join(' • ') : ''}</p>
+            <p class="text-2xl font-bold text-blue-600">KSh ${parseInt(car.price).toLocaleString()}</p>
+            <a href="cars.html" class="mt-4 block text-center bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">View Details</a>
+          </div>
         `;
-        
-        carCard.appendChild(detailsDiv);
         
         // Add to the container
         featuredCarsContainer.appendChild(carCard);
       });
     }
 
-    // Function to change carousel image
-    function changeCarouselImage(carId, newIndex) {
-      // Get all images for this car
-      const carousel = document.querySelector(`.carousel-container[data-car-id="${carId}"]`);
-      if (!carousel) return;
+    // Main function to load cars
+    async function loadCars() {
+      const featuredCarsContainer = document.getElementById('featuredCars');
       
-      const images = carousel.querySelectorAll('.carousel-image');
-      const dots = carousel.querySelectorAll('.carousel-dot');
-      
-      // Hide all images and deactivate all dots
-      images.forEach(img => img.classList.remove('active'));
-      dots.forEach(dot => dot.classList.remove('active'));
-      
-      // Show the selected image and activate the corresponding dot
-      images[newIndex].classList.add('active');
-      dots[newIndex].classList.add('active');
+      try {
+        // Show loading spinner
+        document.getElementById('featuredCarsLoadingSpinner').style.display = 'flex';
+        
+        // Set up timeout to handle slow connections
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Request timeout after 10 seconds')), 10000);
+        });
+        
+        // Fetch car data from Netlify function with timeout
+        const fetchPromise = fetch('/.netlify/functions/get-cars');
+        
+        // Race the fetch against a timeout
+        const response = await Promise.race([fetchPromise, timeoutPromise]);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch car data: ${response.status}`);
+        }
+        
+        const responseData = await response.json();
+        const cars = responseData.cars || [];
+        
+        // Show all cars
+        renderCars(cars);
+        
+      } catch (error) {
+        console.error('Error fetching featured cars:', error);
+        document.getElementById('featuredCarsLoadingSpinner').style.display = 'none';
+        
+        // Show error message and fallback to sample cars
+        featuredCarsContainer.innerHTML = `
+          <div class="col-span-3 text-center py-8">
+            <p class="text-gray-500 mb-4">Unable to load cars from the server. Showing sample cars instead.</p>
+            <button id="retryCarsLoad" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+              Retry
+            </button>
+          </div>
+        `;
+        
+        // Add retry functionality
+        document.getElementById('retryCarsLoad').addEventListener('click', function() {
+          loadCars();
+        });
+        
+        // Load sample cars as fallback
+        setTimeout(() => {
+          renderCars(sampleCars);
+        }, 1000);
+      }
     }
-    
-    // Function to navigate through carousel images
-    function navigateCarousel(carId, direction, totalImages) {
-      // Get currently active image
-      const carousel = document.querySelector(`.carousel-container[data-car-id="${carId}"]`);
-      if (!carousel) return;
-      
-      const activeImage = carousel.querySelector('.carousel-image.active');
-      const currentIndex = parseInt(activeImage.dataset.index);
-      
-      // Calculate new index with wrapping
-      let newIndex = (currentIndex + direction + totalImages) % totalImages;
-      
-      // Change to the new image
-      changeCarouselImage(carId, newIndex);
-    }
-    
-    // Your existing code to load cars...
-  });
-</script>
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', loadCars);
+  </script>
+</body>
+</html>
