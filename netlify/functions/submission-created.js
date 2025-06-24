@@ -2,7 +2,30 @@ exports.handler = async (event) => {
   const { payload } = JSON.parse(event.body);
   const { form_name, data } = payload;
   
-  // Only process car-submissions forms
+  // Process contact form submissions
+  if (form_name === "contact") {
+    console.log("Contact form submission received:", data);
+    
+    // Create email content for contact form
+    const contactEmailContent = `
+      <h1>New Contact Form Message</h1>
+      <p><strong>Name:</strong> ${data.name}</p>
+      <p><strong>Email:</strong> ${data.email}</p>
+      <p><strong>Phone:</strong> ${data.phone}</p>
+      <p><strong>Message:</strong> ${data.message}</p>
+      <p><strong>Date Submitted:</strong> ${new Date().toLocaleString()}</p>
+    `;
+    
+    // Note: Netlify Forms handles the email sending automatically
+    // The emails specified in the Netlify dashboard will receive notifications
+    
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: "Contact form submission processed" })
+    };
+  }
+  
+  // Only process car-submissions forms (existing functionality)
   if (form_name !== "car-submissions") {
     return { statusCode: 200 };
   }
