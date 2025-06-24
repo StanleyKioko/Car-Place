@@ -62,6 +62,46 @@
       color: #b91c1c;
       border-left: 4px solid #ef4444;
     }
+    /* Image carousel styles */
+    .carousel-container {
+      position: relative;
+      width: 100px;
+      height: 64px;
+    }
+    .image-preview {
+      position: relative;
+      height: 100%;
+      width: 100%;
+    }
+    .carousel-image {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+      display: none;
+    }
+    .carousel-image.active {
+      display: block;
+    }
+    .carousel-dots {
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+    }
+    .carousel-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: rgba(200, 200, 200, 0.8);
+      cursor: pointer;
+    }
+    .carousel-dot.active {
+      background-color: #3b82f6;
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -239,19 +279,57 @@
         );
         
         sortedCars.forEach(car => {
-          // Get first image from comma-separated list
-          const firstImage = car.images ? car.images.split(',')[0] : '../images/placeholder.jpg';
+          // Get all images from comma-separated list
+          const imagesList = car.images ? car.images.split(',') : ['../images/placeholder.jpg'];
           
           const row = document.createElement('tr');
           
-          // Create image cell
+          // Create image cell with carousel
           const imageCell = document.createElement('td');
           imageCell.className = 'px-6 py-4 whitespace-nowrap';
-          const image = document.createElement('img');
-          image.src = firstImage;
-          image.alt = `${car.make} ${car.model}`;
-          image.className = 'h-16 w-24 object-cover rounded';
-          imageCell.appendChild(image);
+          
+          // Create carousel container
+          const carouselContainer = document.createElement('div');
+          carouselContainer.className = 'carousel-container';
+          carouselContainer.dataset.carId = car.id;
+          
+          // Create image preview container
+          const imagePreview = document.createElement('div');
+          imagePreview.className = 'image-preview';
+          
+          // Create images
+          imagesList.forEach((imgSrc, index) => {
+            const image = document.createElement('img');
+            image.src = imgSrc;
+            image.alt = `${car.make} ${car.model}`;
+            image.className = `carousel-image ${index === 0 ? 'active' : ''}`;
+            image.dataset.index = index;
+            imagePreview.appendChild(image);
+          });
+          
+          // Add carousel dots if multiple images
+          if (imagesList.length > 1) {
+            const dotsContainer = document.createElement('div');
+            dotsContainer.className = 'carousel-dots';
+            
+            for (let i = 0; i < imagesList.length; i++) {
+              const dot = document.createElement('div');
+              dot.className = `carousel-dot ${i === 0 ? 'active' : ''}`;
+              dot.dataset.index = i;
+              dot.dataset.carId = car.id;
+              dot.addEventListener('click', function() {
+                showImage(car.id, parseInt(this.dataset.index));
+              });
+              dotsContainer.appendChild(dot);
+            }
+            
+            carouselContainer.appendChild(imagePreview);
+            carouselContainer.appendChild(dotsContainer);
+          } else {
+            carouselContainer.appendChild(imagePreview);
+          }
+          
+          imageCell.appendChild(carouselContainer);
           
           // Create car name cell
           const nameCell = document.createElement('td');
@@ -321,6 +399,22 @@
           // Add row to the table
           carsListTableBody.appendChild(row);
         });
+      }
+      
+      // Function to show specific image in carousel
+      function showImage(carId, imageIndex) {
+        const carousel = document.querySelector(`.carousel-container[data-car-id="${carId}"]`);
+        if (!carousel) return;
+        
+        // Update images
+        const images = carousel.querySelectorAll('.carousel-image');
+        images.forEach(img => img.classList.remove('active'));
+        images[imageIndex].classList.add('active');
+        
+        // Update dots
+        const dots = carousel.querySelectorAll('.carousel-dot');
+        dots.forEach(dot => dot.classList.remove('active'));
+        dots[imageIndex].classList.add('active');
       }
       
       // Function to show delete modal
