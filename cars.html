@@ -46,6 +46,82 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    /* Image Gallery Styles */
+    .car-image-gallery {
+      position: relative;
+      overflow: hidden;
+      height: 200px;
+    }
+    
+    .gallery-images {
+      display: flex;
+      transition: transform 0.3s ease;
+      height: 100%;
+    }
+    
+    .gallery-image {
+      min-width: 100%;
+      object-fit: cover;
+      height: 100%;
+    }
+    
+    .gallery-nav {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    .car-image-gallery:hover .gallery-nav {
+      opacity: 1;
+    }
+    
+    .gallery-btn {
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin: 0 8px;
+      transition: background 0.2s;
+    }
+    
+    .gallery-btn:hover {
+      background: rgba(0,0,0,0.7);
+    }
+    
+    .gallery-indicators {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+    }
+    
+    .indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+    }
+    
+    .indicator.active {
+      background: #ffffff;
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -60,8 +136,9 @@
         <a href="cars.html" class="text-blue-600 font-semibold">Cars</a>
         <a href="contact.html" class="text-gray-700 hover:text-blue-600">Contact</a>
         <a href="about.html" class="text-gray-700 hover:text-blue-600">About</a>
-        
-  </a>
+        <a href="./admin" class="text-gray-700 hover:text-blue-600">
+          <i class="fas fa-user-shield"></i>
+        </a>
       </div>
     </nav>
   </header>
@@ -92,6 +169,88 @@
   </footer>
 
   <script>
+    // Function to create an image gallery for a car
+    function createImageGallery(imageUrls, carName) {
+      // If no images or just one image, return a simple image
+      if (!imageUrls || imageUrls.length === 0) {
+        return `<img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b" alt="No image available" class="w-full h-48 object-cover">`;
+      }
+      
+      const images = imageUrls.split(',').map(url => url.trim()).filter(url => url);
+      
+      if (images.length === 1) {
+        return `<img src="${images[0]}" alt="${carName}" class="w-full h-48 object-cover">`;
+      }
+      
+      // Create gallery HTML
+      const galleryHTML = `
+        <div class="car-image-gallery" data-images="${images.length}">
+          <div class="gallery-images">
+            ${images.map(url => `<img src="${url}" alt="${carName}" class="gallery-image">`).join('')}
+          </div>
+          <div class="gallery-nav">
+            <button class="gallery-btn prev-btn" aria-label="Previous image">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="gallery-btn next-btn" aria-label="Next image">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="gallery-indicators">
+            ${images.map((_, i) => `<div class="indicator${i === 0 ? ' active' : ''}" data-index="${i}"></div>`).join('')}
+          </div>
+        </div>
+      `;
+      
+      return galleryHTML;
+    }
+
+    // Function to initialize image galleries after DOM content is loaded
+    function initImageGalleries() {
+      document.querySelectorAll('.car-image-gallery').forEach(gallery => {
+        const images = gallery.querySelector('.gallery-images');
+        const prevBtn = gallery.querySelector('.prev-btn');
+        const nextBtn = gallery.querySelector('.next-btn');
+        const indicators = gallery.querySelectorAll('.indicator');
+        const imageCount = parseInt(gallery.dataset.images, 10);
+        let currentIndex = 0;
+        
+        // Function to update gallery
+        function showImage(index) {
+          // Ensure index is within bounds
+          currentIndex = (index + imageCount) % imageCount;
+          
+          // Update transform to show the current image
+          images.style.transform = `translateX(-${currentIndex * 100}%)`;
+          
+          // Update indicators
+          indicators.forEach((indicator, i) => {
+            indicator.classList.toggle('active', i === currentIndex);
+          });
+        }
+        
+        // Previous button click
+        prevBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showImage(currentIndex - 1);
+        });
+        
+        // Next button click
+        nextBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showImage(currentIndex + 1);
+        });
+        
+        // Indicator clicks
+        indicators.forEach(indicator => {
+          indicator.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showImage(parseInt(indicator.dataset.index, 10));
+          });
+        });
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', async function() {
       const carListingsContainer = document.getElementById('carListings');
 
@@ -126,9 +285,6 @@
         
         // Loop through cars and create HTML for each
         cars.forEach(car => {
-          // Get first image from comma-separated list, or use a placeholder
-          const firstImage = car.images ? car.images.split(',')[0] : 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b';
-          
           // Create card element
           const carCard = document.createElement('div');
           carCard.className = 'car-card bg-white rounded-lg shadow-lg overflow-hidden';
@@ -143,9 +299,9 @@
             `;
           }
           
-          // Add car details
+          // Add car details with image gallery
           carCard.innerHTML += `
-            <img src="${firstImage}" alt="${car.make} ${car.model}" class="w-full h-48 object-cover">
+            ${createImageGallery(car.images, `${car.make} ${car.model}`)}
             <div class="p-6">
               <h3 class="text-xl font-bold font-poppins mb-2">${car.make} ${car.model}</h3>
               <p class="text-gray-600 mb-4">${car.colour || ''} ${car.features ? '• ' + car.features.split(',').slice(0, 2).join(' • ') : ''}</p>
@@ -165,6 +321,9 @@
           // Add to the container
           carListingsContainer.appendChild(carCard);
         });
+        
+        // Initialize image galleries
+        setTimeout(initImageGalleries, 100);
         
       } catch (error) {
         console.error('Error fetching cars:', error);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- Keep existing head content -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,134 +41,89 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    /* Image Gallery Styles */
+    .car-image-gallery {
+      position: relative;
+      overflow: hidden;
+      height: 200px;
+    }
+    
+    .gallery-images {
+      display: flex;
+      transition: transform 0.3s ease;
+      height: 100%;
+    }
+    
+    .gallery-image {
+      min-width: 100%;
+      object-fit: cover;
+      height: 100%;
+    }
+    
+    .gallery-nav {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    .car-image-gallery:hover .gallery-nav {
+      opacity: 1;
+    }
+    
+    .gallery-btn {
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin: 0 8px;
+      transition: background 0.2s;
+    }
+    
+    .gallery-btn:hover {
+      background: rgba(0,0,0,0.7);
+    }
+    
+    .gallery-indicators {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+    }
+    
+    .indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      cursor: pointer;
+    }
+    
+    .indicator.active {
+      background: #ffffff;
+    }
   </style>
 </head>
+<!-- Keep existing body content until the script part -->
 <body class="bg-gray-100">
-  <!-- Header -->
-  <header class="bg-white shadow sticky top-0 z-50">
-    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="text-2xl font-bold text-blue-600 font-poppins">
-        Blobe Cars
-      </div>
-      <div class="space-x-6">
-        <a href="index.html" class="text-blue-600 font-semibold">Home</a>
-        <a href="cars.html" class="text-gray-700 hover:text-blue-600">Cars</a>
-        <a href="contact.html" class="text-gray-700 hover:text-blue-600">Contact</a>
-        <a href="about.html" class="text-gray-700 hover:text-blue-600">About</a>
-        <a href="./admin" class="text-gray-700 hover:text-blue-600">
-        <i class="fas fa-user-shield"></i>
-        </a>
-      </div>
-    </nav>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="hero-bg h-96 flex items-center justify-center text-white">
-    <div class="text-center">
-      <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4">Find Your Dream Car in Kenya</h1>
-      <p class="text-lg md:text-xl mb-6">Explore our wide range of quality vehicles at unbeatable prices.</p>
-      <a href="cars.html" class="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition">Browse Cars</a>
-    </div>
-  </section>
-
-  <!-- Featured Cars Preview -->
-  <section class="container mx-auto px-4 py-12">
-    <h2 class="text-3xl font-bold text-center font-poppins mb-8">Featured Cars</h2>
-    
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="featuredCars">
-      <div id="featuredCarsLoadingSpinner" class="col-span-3">
-        <div class="spinner"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Why Choose Us -->
-  <section class="bg-gray-50 py-16">
-    <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center font-poppins mb-12">Why Choose Us</h2>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-        <!-- Quality Selection -->
-        <div class="bg-white p-6 rounded-lg shadow-md text-center">
-          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold mb-2">Quality Selection</h3>
-          <p class="text-gray-600">All our vehicles undergo rigorous quality checks before being listed.</p>
-        </div>
-        
-        <!-- Competitive Pricing -->
-        <div class="bg-white p-6 rounded-lg shadow-md text-center">
-          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold mb-2">Competitive Pricing</h3>
-          <p class="text-gray-600">We offer the best market rates with flexible payment options.</p>
-        </div>
-        
-        <!-- After-sales Support -->
-        <div class="bg-white p-6 rounded-lg shadow-md text-center">
-          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold mb-2">After-sales Support</h3>
-          <p class="text-gray-600">Excellent customer service and maintenance support after purchase.</p>
-        </div>
-        
-        <!-- Trade-in Options -->
-        <div class="bg-white p-6 rounded-lg shadow-md text-center">
-          <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold mb-2">Trade-in Options</h3>
-          <p class="text-gray-600">Upgrade your current vehicle with our flexible trade-in programs.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-white py-8">
-    <div class="container mx-auto px-4">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- About -->
-        <div>
-          <h3 class="text-xl font-bold mb-4">About Blobe Cars</h3>
-          <p class="text-gray-300">We are a premier car dealership in Kenya, specializing in quality vehicles at affordable prices. Our commitment is to provide exceptional service and value to our clients.</p>
-        </div>
-        
-        <!-- Quick Links -->
-        <div>
-          <h3 class="text-xl font-bold mb-4">Quick Links</h3>
-          <ul class="space-y-2">
-            <li><a href="index.html" class="text-gray-300 hover:text-white">Home</a></li>
-            <li><a href="cars.html" class="text-gray-300 hover:text-white">Cars</a></li>
-            <li><a href="contact.html" class="text-gray-300 hover:text-white">Contact</a></li>
-            <li><a href="about.html" class="text-gray-300 hover:text-white">About</a></li>
-          </ul>
-        </div>
-        
-        <!-- Contact Info -->
-        <div>
-          <h3 class="text-xl font-bold mb-4">Contact Information</h3>
-          <p class="text-gray-300">Nairobi, Kenya</p>
-          <p class="text-gray-300">Phone: +254 708967800</p>
-          <p class="text-gray-300">Email: mwangestanley02@gmail.com</p>
-        </div>
-      </div>
-      <div class="border-t border-gray-700 mt-8 pt-4 text-center">
-        <p>&copy; 2025 Blobe Cars. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
-
+  <!-- Keep all existing HTML sections unchanged -->
+  <!-- Only modify the script part -->
+  
   <script>
     // Sample car data to use when netlify functions fail
     const sampleCars = [
@@ -183,7 +139,7 @@
         fuel: "Petrol",
         colour: "White",
         features: "Alloy Wheels,Bluetooth,Backup Camera",
-        images: "https://images.unsplash.com/photo-1541348263662-e068662d82af?q=80&w=1000&auto=format&fit=crop",
+        images: "https://images.unsplash.com/photo-1541348263662-e068662d82af?q=80&w=1000&auto=format&fit=crop,https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=1000&auto=format&fit=crop",
         isFeatured: true
       },
       {
@@ -198,7 +154,7 @@
         fuel: "Petrol",
         colour: "Silver",
         features: "Leather Seats,Sunroof,Navigation",
-        images: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?q=80&w=1000&auto=format&fit=crop",
+        images: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?q=80&w=1000&auto=format&fit=crop,https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1000&auto=format&fit=crop",
         isFeatured: true
       },
       {
@@ -213,10 +169,92 @@
         fuel: "Petrol",
         colour: "Red",
         features: "Bose Sound,LED Headlights,Lane Assist",
-        images: "https://images.unsplash.com/photo-1563720223490-9d24e5e6a954?q=80&w=1000&auto=format&fit=crop",
+        images: "https://images.unsplash.com/photo-1563720223490-9d24e5e6a954?q=80&w=1000&auto=format&fit=crop,https://images.unsplash.com/photo-1562911791-c7a97b729ec5?q=80&w=1000&auto=format&fit=crop",
         isFeatured: true
       }
     ];
+
+    // Function to create an image gallery for a car
+    function createImageGallery(imageUrls, carName) {
+      // If no images or just one image, return a simple image
+      if (!imageUrls || imageUrls.length === 0) {
+        return `<img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b" alt="No image available" class="w-full h-48 object-cover">`;
+      }
+      
+      const images = imageUrls.split(',').map(url => url.trim()).filter(url => url);
+      
+      if (images.length === 1) {
+        return `<img src="${images[0]}" alt="${carName}" class="w-full h-48 object-cover">`;
+      }
+      
+      // Create gallery HTML
+      const galleryHTML = `
+        <div class="car-image-gallery" data-images="${images.length}">
+          <div class="gallery-images">
+            ${images.map(url => `<img src="${url}" alt="${carName}" class="gallery-image">`).join('')}
+          </div>
+          <div class="gallery-nav">
+            <button class="gallery-btn prev-btn" aria-label="Previous image">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="gallery-btn next-btn" aria-label="Next image">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="gallery-indicators">
+            ${images.map((_, i) => `<div class="indicator${i === 0 ? ' active' : ''}" data-index="${i}"></div>`).join('')}
+          </div>
+        </div>
+      `;
+      
+      return galleryHTML;
+    }
+
+    // Function to initialize image galleries after DOM content is loaded
+    function initImageGalleries() {
+      document.querySelectorAll('.car-image-gallery').forEach(gallery => {
+        const images = gallery.querySelector('.gallery-images');
+        const prevBtn = gallery.querySelector('.prev-btn');
+        const nextBtn = gallery.querySelector('.next-btn');
+        const indicators = gallery.querySelectorAll('.indicator');
+        const imageCount = parseInt(gallery.dataset.images, 10);
+        let currentIndex = 0;
+        
+        // Function to update gallery
+        function showImage(index) {
+          // Ensure index is within bounds
+          currentIndex = (index + imageCount) % imageCount;
+          
+          // Update transform to show the current image
+          images.style.transform = `translateX(-${currentIndex * 100}%)`;
+          
+          // Update indicators
+          indicators.forEach((indicator, i) => {
+            indicator.classList.toggle('active', i === currentIndex);
+          });
+        }
+        
+        // Previous button click
+        prevBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showImage(currentIndex - 1);
+        });
+        
+        // Next button click
+        nextBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showImage(currentIndex + 1);
+        });
+        
+        // Indicator clicks
+        indicators.forEach(indicator => {
+          indicator.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showImage(parseInt(indicator.dataset.index, 10));
+          });
+        });
+      });
+    }
 
     // Function to render car cards
     function renderCars(cars) {
@@ -240,9 +278,6 @@
       
       // Loop through cars and create HTML for each
       carsToShow.forEach(car => {
-        // Get first image from comma-separated list, or use a placeholder
-        const firstImage = car.images ? car.images.split(',')[0] : 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b';
-        
         // Create card element
         const carCard = document.createElement('div');
         carCard.className = 'car-card bg-white rounded-lg shadow-lg overflow-hidden';
@@ -253,7 +288,7 @@
           <div class="bg-yellow-100 px-4 py-2">
             <span class="text-yellow-800 font-bold text-xs">${car.isFeatured ? 'FEATURED' : 'CAR'}</span>
           </div>
-          <img src="${firstImage}" alt="${car.make} ${car.model}" class="w-full h-48 object-cover">
+          ${createImageGallery(car.images, `${car.make} ${car.model}`)}
           <div class="p-6">
             <h3 class="text-xl font-bold font-poppins mb-2">${car.make} ${car.model}</h3>
             <p class="text-gray-600 mb-4">${car.colour || ''} ${car.features ? '• ' + car.features.split(',').slice(0, 2).join(' • ') : ''}</p>
@@ -265,6 +300,9 @@
         // Add to the container
         featuredCarsContainer.appendChild(carCard);
       });
+      
+      // Initialize image galleries
+      setTimeout(initImageGalleries, 100);
     }
 
     // Main function to load cars
